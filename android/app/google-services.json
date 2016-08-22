@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "280436316587",
+    "project_id": "foodbeazt-1383"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280436316587:android:eca4475d61fb9825",
+        "android_client_info": {
+          "package_name": "com.fbeaztadmin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "280436316587-qppavtt0l6rb891k0f3tjqh90mdcb4ol.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fbeaztadmin",
+            "certificate_hash": "3249F74F53E73AE17636BC8AE31949D355D08E66"
+          }
+        },
+        {
+          "client_id": "280436316587-pc2v79112kdqu0jiruu56m92s8nr4s42.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDV9kgDec6ttOW_hRc-q8-hQvi-UfCVMsE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
