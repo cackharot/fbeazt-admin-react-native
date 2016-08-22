@@ -92,11 +92,13 @@ class FbeaztAdmin extends Component {
       await GoogleSignin.configure({
         // scopes: ['https://www.googleapis.com/auth/calendar'],
         webClientId: '280436316587-pc2v79112kdqu0jiruu56m92s8nr4s42.apps.googleusercontent.com',
-        offlineAccess: true
+        offlineAccess: false
       });
 
       const user = await GoogleSignin.currentUserAsync();
-      console.log(user);
+      if (user) {
+        console.log(user.email);
+      }
       this.setState({ user });
     }
     catch (err) {

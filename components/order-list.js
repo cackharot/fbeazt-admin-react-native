@@ -70,7 +70,7 @@ export class OrderList extends Component {
     this.props.navigator.push({
       id: 'orderdetails',
       title: '#' + selectedOrder.order_no + ' Details',
-      passProps: { order: selectedOrder }
+      passProps: { order_id: selectedOrder._id.$oid }
     });
   }
 
