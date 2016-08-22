@@ -4,7 +4,10 @@ import {
   View,
   Text,
   ListView,
-  TouchableHighlight
+  ScrollView,
+  TouchableHighlight,
+  ActivityIndicator,
+  ToolbarAndroid
 } from 'react-native';
 
 import {
@@ -19,29 +22,36 @@ import {
 
 import {OrderService} from '../services/orderservice';
 
+import {OrderDetailsView} from './order-details';
+
 import * as _ from 'lodash';
 
 export class OrderList extends Component {
   static propTypes = {
     title: React.PropTypes.string.isRequired,
-    onForward: React.PropTypes.func.isRequired,
-    onBack: React.PropTypes.func.isRequired,
+    // onForward: React.PropTypes.func.isRequired,
+    // onBack: React.PropTypes.func.isRequired,
   }
 
   constructor(props) {
     super(props);
     this.ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1._id.$oid !== r2._id.$oid });
     this.state = {
-      orders: this.ds.cloneWithRows([])
+      orders: this.ds.cloneWithRows([]),
+      isLoading: false
     };
     this.service = new OrderService();
   }
 
   componentDidMount() {
+    this.setState({
+      isLoading: true
+    });
     this.service.getOrders().then(x => {
       // console.log(x);
       var data = this.ds.cloneWithRows(x.items);
       this.setState({
+        isLoading: false,
         _orders: x.items,
         orders: data,
         total: x.total,
@@ -57,7 +67,11 @@ export class OrderList extends Component {
 
   rowPressed(order_id) {
     var selectedOrder = this.state._orders.filter(x => x._id.$oid === order_id.$oid)[0];
-    // console.info(selectedOrder);
+    this.props.navigator.push({
+      id: 'orderdetails',
+      title: '#' + selectedOrder.order_no + ' Details',
+      passProps: { order: selectedOrder }
+    });
   }
 
   renderRow(order, sectionID, rowID) {
@@ -86,25 +100,47 @@ export class OrderList extends Component {
   }
 
   render() {
+    var spinner = this.state.isLoading ?
+      (<ActivityIndicator
+        animating={this.state.isLoading}
+        style={[styles.centering, { height: 80 }]}
+        size="large"
+        />) : (<View/>);
     return (
-      <View>
-        <Text>Current Scene: { this.props.title }</Text>
-        <TouchableHighlight onPress={this.props.onForward}>
-          <Text>Tap me to load the next scene</Text>
-        </TouchableHighlight>
-        <TouchableHighlight onPress={this.props.onBack}>
-          <Text>Tap me to go back</Text>
-        </TouchableHighlight>
+      <ScrollView>
+        <ToolbarAndroid style={styles.toolbar}
+          title={this.props.title}
+          titleColor={'#FFFFFF'}/>
+        {spinner}
         <ListView
           dataSource={this.state.orders}
           renderRow={this.renderRow.bind(this) }
           />
-      </View>
+      </ScrollView>
     )
   }
 }
 
+// <View>
+//   <Text>Current Scene: { this.props.title }</Text>
+//   <TouchableHighlight onPress={this.props.onForward}>
+//     <Text>Tap me to load the next scene</Text>
+//   </TouchableHighlight>
+//   <TouchableHighlight onPress={this.props.onBack}>
+//     <Text>Tap me to go back</Text>
+//   </TouchableHighlight>
+// </View>
+
 var styles = StyleSheet.create({
+  toolbar: {
+    backgroundColor: '#e9eaed',
+    height: 56,
+  },
+  centering: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
   textContainer: {
     flex: 1
   },

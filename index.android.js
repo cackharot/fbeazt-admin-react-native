@@ -15,6 +15,7 @@ import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 import { Avatar, Button, Card } from 'react-native-material-design';
 
 import {OrderList} from './components/order-list';
+import {OrderDetailsView} from './components/order-details';
 
 class FbeaztAdmin extends Component {
   constructor(props) {
@@ -48,30 +49,28 @@ class FbeaztAdmin extends Component {
     if (this.state.user) {
       return (
         <Navigator
-        initialRoute={{ title: 'My Initial Scene', index: 0 }}
-        renderScene={(route, navigator) =>
-          <OrderList
-            title={route.title}
-
-            // Function to call when a new scene should be displayed
-            onForward={ () => {
-              const nextIndex = route.index + 1;
-              navigator.push({
-                title: 'Scene ' + nextIndex,
-                index: nextIndex,
-              });
-            }}
-
-            // Function to call to go back to the previous scene
-            onBack={() => {
-              if (route.index > 0) {
-                navigator.pop();
-              }
-            }}
+          initialRoute={{ id: 'home' }}
+          renderScene={this.navigatorRenderScene}
           />
-        }
-      />
       );
+    }
+  }
+
+  navigatorRenderScene(route, navigator) {
+    _navigator = navigator;
+    switch (route.id) {
+      case 'home':
+        return (<OrderList
+          title='Orders'
+          navigator={navigator}
+          />);
+      case 'orderdetails':
+        return (<OrderDetailsView
+          navigator={navigator}
+          {...route.passProps}
+          title={route.title} />);
+      case 'back':
+        _navigator.pop();
     }
   }
   // <View style={styles.container}>

@@ -15,6 +15,7 @@ import java.util.List;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 // import io.neson.react.notification.NotificationPackage;
 // import com.evollu.react.fcm.FIRMessagingPackage;
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -29,8 +30,9 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
           // new FIRMessagingPackage(),
-          new RNGoogleSigninPackage()
-          // new NotificationPackage()
+          // new NotificationPackage(),
+          new RNGoogleSigninPackage(),
+          new ReactNativeConfigPackage()
       );
     }
   };
