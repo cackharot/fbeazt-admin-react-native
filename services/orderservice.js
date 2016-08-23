@@ -7,13 +7,14 @@ export class OrderService {
   constructor() {
     var user = GoogleSignin.currentUser();
     this.idToken = null;
-    this.headers = {
+    this.headers = new Headers({
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-    };
+    });
     if (user && user.idToken) {
       this.idToken = 'Bearer ' + user.idToken;
-      this.headers['Authorization'] = this.idToken;
+      this.headers.set('Authorization', this.idToken);
+      this.headers.set('Cookie', null);
     }
   }
 

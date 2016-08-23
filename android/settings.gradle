@@ -1,12 +1,16 @@
 rootProject.name = 'fbeaztAdmin'
 
 include ':app'
-// include ':react-native-fcm'
 include ':react-native-google-signin'
 include ':react-native-config'
+include ':react-native-fcm'
 // include ':react-native-system-notification'
+include ':react-native-push-notification'
+include ':react-native-vector-icons'
 
+project(':react-native-vector-icons').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-vector-icons/android')
 project(':react-native-google-signin').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-google-signin/android')
-// project(':react-native-system-notification').projectDir = new File(settingsDir, '../node_modules/react-native-system-notification/android')
-// project(':react-native-fcm').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fcm/android')
+project(':react-native-fcm').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fcm/android')
 project(':react-native-config').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-config/android')
+project(':react-native-push-notification').projectDir = file('../node_modules/react-native-push-notification/android')
+// project(':react-native-system-notification').projectDir = new File(settingsDir, '../node_modules/react-native-system-notification/android')

@@ -12,13 +12,16 @@ import {
 
 import {
   Checkbox
-  , Icon
   , List
   , Ripple
   , Toolbar
   , Button
   , Card
 } from 'react-native-material-design';
+
+import Icon from 'react-native-vector-icons/EvilIcons';
+
+import { styles } from '../app.styles';
 
 import {OrderService} from '../services/orderservice';
 
@@ -77,7 +80,8 @@ export class OrderDetailsView extends Component {
       </View>) : (<View/>);
     return (
       <View underlayColor='#dddddd'>
-        <ToolbarAndroid style={styles.toolbar}
+        <Icon.ToolbarAndroid style={styles.toolbar}
+          navIconName="md-arrow-back"
           title={this.props.title}
           navIcon={require('../assets/icons/ic_arrow_back_black_24dp.png') }
           onIconClicked={this.props.navigator.pop}
@@ -88,57 +92,3 @@ export class OrderDetailsView extends Component {
     );
   }
 }
-
-
-var styles = StyleSheet.create({
-  toolbar: {
-    backgroundColor: '#e9eaed',
-    height: 56,
-  },
-  centering: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-  },
-  textContainer: {
-    flex: 1
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#dddddd'
-  },
-  total: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    color: '#48BBEC'
-  },
-  customer_address: {
-
-  },
-  customer_email: {
-
-  },
-  customer_name: {
-    fontSize: 20
-  },
-  customer_phone: {
-    fontSize: 19
-  },
-  customer_pincode: {
-
-  },
-  order_status: {
-
-  },
-  itemcount: {
-
-  },
-  title: {
-    fontSize: 20,
-    color: '#656565'
-  },
-  rowContainer: {
-    flexDirection: 'row',
-    padding: 10
-  }
-});

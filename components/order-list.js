@@ -3,22 +3,26 @@ import {
   StyleSheet,
   View,
   Text,
+  Image,
   ListView,
   ScrollView,
   TouchableHighlight,
-  ActivityIndicator,
-  ToolbarAndroid
+  ActivityIndicator
 } from 'react-native';
 
 import {
-  Checkbox
-  , Icon
+    Avatar
+  , Checkbox
   , List
   , Ripple
   , Toolbar
   , Button
   , Card
 } from 'react-native-material-design';
+
+import Icon from 'react-native-vector-icons/Ionicons';
+
+import { styles } from '../app.styles';
 
 import {OrderService} from '../services/orderservice';
 
@@ -29,8 +33,7 @@ import * as _ from 'lodash';
 export class OrderList extends Component {
   static propTypes = {
     title: React.PropTypes.string.isRequired,
-    // onForward: React.PropTypes.func.isRequired,
-    // onBack: React.PropTypes.func.isRequired,
+    openDrawer: React.PropTypes.func.isRequired
   }
 
   constructor(props) {
@@ -106,80 +109,24 @@ export class OrderList extends Component {
         style={[styles.centering, { height: 80 }]}
         size="large"
         />) : (<View/>);
+
+
     return (
-      <ScrollView>
-        <ToolbarAndroid style={styles.toolbar}
+      <View>
+        <Icon.ToolbarAndroid style={styles.toolbar}
+          navIconName="md-menu"
           title={this.props.title}
+          onIconClicked={this.props.openDrawer}
           titleColor={'#FFFFFF'}/>
         {spinner}
-        <ListView
-          dataSource={this.state.orders}
-          renderRow={this.renderRow.bind(this) }
-          />
-      </ScrollView>
+        <ScrollView>
+          <ListView
+            enableEmptySections={true}
+            dataSource={this.state.orders}
+            renderRow={this.renderRow.bind(this) }
+            />
+        </ScrollView>
+      </View>
     )
   }
 }
-
-// <View>
-//   <Text>Current Scene: { this.props.title }</Text>
-//   <TouchableHighlight onPress={this.props.onForward}>
-//     <Text>Tap me to load the next scene</Text>
-//   </TouchableHighlight>
-//   <TouchableHighlight onPress={this.props.onBack}>
-//     <Text>Tap me to go back</Text>
-//   </TouchableHighlight>
-// </View>
-
-var styles = StyleSheet.create({
-  toolbar: {
-    backgroundColor: '#e9eaed',
-    height: 56,
-  },
-  centering: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-  },
-  textContainer: {
-    flex: 1
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#dddddd'
-  },
-  total: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    color: '#48BBEC'
-  },
-  customer_address: {
-
-  },
-  customer_email: {
-
-  },
-  customer_name: {
-    fontSize: 20
-  },
-  customer_phone: {
-    fontSize: 19
-  },
-  customer_pincode: {
-
-  },
-  order_status: {
-
-  },
-  itemcount: {
-
-  },
-  title: {
-    fontSize: 20,
-    color: '#656565'
-  },
-  rowContainer: {
-    flexDirection: 'row',
-    padding: 10
-  }
-});

@@ -13,9 +13,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
-// import io.neson.react.notification.NotificationPackage;
 // import com.evollu.react.fcm.FIRMessagingPackage;
+// import io.neson.react.notification.NotificationPackage;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -32,7 +34,9 @@ public class MainApplication extends Application implements ReactApplication {
           // new FIRMessagingPackage(),
           // new NotificationPackage(),
           new RNGoogleSigninPackage(),
-          new ReactNativeConfigPackage()
+          new ReactNativeConfigPackage(),
+          new ReactNativePushNotificationPackage(),
+          new VectorIconsPackage()
       );
     }
   };
