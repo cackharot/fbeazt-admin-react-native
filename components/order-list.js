@@ -136,7 +136,9 @@ export class OrderList extends Component {
         rightIcon={<Icon name="md-arrow-dropright-circle" style={{color:'#2aa198',fontSize:32}}/>}
         lines={3}
         leftAvatar={<Avatar icon={statusIcon} />}
+        onPress={() => this.rowPressed(order._id) }
         onRightIconClicked={() => this.rowPressed(order._id) }
+        onLeftIconClicked={() => this.rowPressed(order._id) }
       />
     );
   }

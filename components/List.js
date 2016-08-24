@@ -60,9 +60,11 @@ export class List extends Component {
                         </TouchableWithoutFeedback>
                     }
                     {leftAvatar &&
-                        <View style={[styles.leftAvatar, lines > 2 && { paddingTop: 16, alignSelf: 'flex-start' }]}>
-                            {leftAvatar}
-                        </View>
+                        <Ripple onPress={onLeftIconClicked}>
+                            <View style={[styles.leftAvatar, lines > 2 && { paddingTop: 16, alignSelf: 'flex-start' }]}>
+                                {leftAvatar}
+                            </View>
+                        </Ripple>
                     }
                     <View style={{ flex: 1, justifyContent: 'center' }}>
                         <View style={styles.firstLine}>

@@ -10,6 +10,21 @@ import {
   ActivityIndicator
 } from 'react-native';
 
+import {
+    Avatar
+  , Checkbox
+  , Subheader
+  , Divider
+  , IconToggle
+  , Ripple
+  , Toolbar
+  , Button
+  , Card
+  , COLOR
+} from 'react-native-material-design';
+
+import { List } from './List';
+
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { styles } from '../app.styles';
@@ -52,23 +67,62 @@ export class OrderDetailsView extends Component {
         size="large"
         />) : (<View/>);
     var order = this.state.order;
-    var orderDetailView = order ?
-      (<View>
-        <View style={styles.rowContainer}>
-          <Text style={styles.order_status}>{order.status.toUpperCase() }</Text>
-          <View  style={styles.textContainer}>
-            <Text style={styles.title} numberOfLines={1}>{order.order_no}</Text>
-            <Text style={styles.customer_name}>{order.delivery_details.name}</Text>
-            <Text style={styles.customer_phone}>{order.delivery_details.phone}</Text>
-            <Text style={styles.customer_email}>{order.delivery_details.email}</Text>
-            <Text style={styles.customer_address}>{order.delivery_details.address}</Text>
-            <Text style={styles.customer_pincode}>{order.delivery_details.pincode}</Text>
-            <Text style={styles.total}>Rs.{order.total}</Text>
-            <Text style={styles.itemcount}>Item Count/Qty: {order.items.length}/{order.items.reduce((i, x) => i + x.quantity, 0)}</Text>
-          </View>
+
+    var orderDetailView = (<View/>);
+    if(order){
+      var totalItemQty = order.items.reduce((i, x) => i + x.quantity, 0);
+      let orderDate = new Date(order.created_at.$date)
+      let dateStr = this.formatDate(orderDate);
+      var moreMsg = [
+        {
+          text: (<Text>{order.delivery_details.name}</Text>),
+        },
+        {
+          text: (<Text><Icon name="md-call" />{order.delivery_details.phone} <Icon name="md-mail" /> {order.delivery_details.email}</Text>)
+        },
+        {
+          text: (<Text><Icon name="md-locate" /> {order.delivery_details.address}</Text>)
+        },
+        {
+          text: (<Text><Icon name="md-compass" /> {order.delivery_details.landmark} - {order.delivery_details.pincode}</Text>)
+        },
+        {
+          text: (<Text><Icon name="md-calendar" /> {dateStr}</Text>)
+        }
+      ]
+      let statusIcon = this.getStatusIcon(order.status.toUpperCase());
+      orderDetailView = (<View>
+          <List
+            key={order._id.$oid}
+            keyId={order._id.$oid}
+            primaryText={order.order_no}
+            secondaryTextMoreLine={moreMsg}
+            primaryColor={'#002b36'}
+            lines={6}
+            captionText={'Rs.' + order.total}
+            leftAvatar={<Avatar icon={statusIcon} />}
+          />
+        <View style={styles.separator}/>
+        <View style={{paddingLeft:16}}>
+          <Text style={{color:'#002b36'}}>Order status: {order.status}</Text>
+          <Text style={{color:'#073642'}}>Payment mode: {(order.payment_type || 'COD').toUpperCase()}</Text>
+          <Text style={{color:'#586e75'}}>Payment status: {(order.payment_status || 'PAID').toUpperCase()}</Text>
+          <Text>Delivery charges: Rs. {order.delivery_charges}</Text>
         </View>
         <View style={styles.separator}/>
-      </View>) : (<View/>);
+        <Subheader text="Item details"/>
+        {order.items.map((dish, i)=> (
+          <List
+            key={i}
+            keyId={dish.no.toString()}
+            primaryText={dish.name}
+            secondaryText={dish.store.name}
+            captionText={'Rs.' + (dish.price_detail ? dish.price_detail.price : dish.price).toFixed(2).toString()}
+          />
+        ))}
+        <View style={styles.separator}/>
+      </View>)
+    }
     return (
       <View underlayColor='#dddddd'>
         <Icon.ToolbarAndroid style={styles.toolbar}
@@ -81,5 +135,33 @@ export class OrderDetailsView extends Component {
         {orderDetailView}
       </View>
     );
+  }
+
+  getStatusIcon(status){
+    switch(status){
+      case 'PENDING':
+        return 'shopping-cart';
+      case 'PREPARING':
+        return 'schedule';
+      case 'PROGRESS':
+        return 'motorcycle';
+      case 'DELIVERED':
+        return 'check-circle';
+      case 'CANCELLED':
+        return 'highlight-off';
+      default:
+        return 'stars';
+    }
+  }
+
+  formatDate(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear() + "  " + strTime;
   }
 }
