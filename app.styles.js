@@ -17,12 +17,12 @@ export const styles = StyleSheet.create({
     padding: 20
   },
   menu_btn :{
-    textAlign: 'left',
-    color: '#d33682',
+    borderWidth:0,
+    borderRadius:0,
     padding: 10,
-    borderWidth: 3,
-    borderColor: '#eee',
-    borderBottomWidth: 5
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor:"#F5FCFF",
   },
   welcome: {
     fontSize: 20,
@@ -43,9 +43,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 8,
   },
-  textContainer: {
-    flex: 1
-  },
   separator: {
     height: 1,
     backgroundColor: '#dddddd'
@@ -53,7 +50,8 @@ export const styles = StyleSheet.create({
   total: {
     fontSize: 25,
     fontWeight: 'bold',
-    color: '#48BBEC'
+    color: '#268bd2',
+    fontFamily: 'roboto'
   },
   customer_address: {
 
@@ -62,10 +60,12 @@ export const styles = StyleSheet.create({
 
   },
   customer_name: {
-    fontSize: 20
+    fontSize: 18,
+    color: '#073642'
   },
   customer_phone: {
-    fontSize: 19
+    fontSize: 16,
+    color: '#586e75'
   },
   customer_pincode: {
 
@@ -78,10 +78,31 @@ export const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    color: '#656565'
+    color: '#002b36',
+    fontFamily: 'roboto'
+  },
+  textContainer: {
+    flex: 1,
+  },
+  orderRowContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   rowContainer: {
     flexDirection: 'row',
     padding: 10
+  },
+  columnContainer: {
+    flexDirection: 'column',
+    padding: 10
+  },
+  orderStatusContainer: {
+    flexDirection: 'row'
+  },
+  orderStatusIcon: {
+    marginRight: 10
   }
 });

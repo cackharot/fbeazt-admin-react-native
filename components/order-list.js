@@ -83,17 +83,26 @@ export class OrderList extends Component {
       <TouchableHighlight onPress={() => this.rowPressed(order._id) }
         underlayColor='#dddddd'>
         <View>
-          <View style={styles.rowContainer}>
-            <Text style={styles.order_status}>{order.status.toUpperCase() }</Text>
-            <View  style={styles.textContainer}>
-              <Text style={styles.title} numberOfLines={1}>{order.order_no}</Text>
-              <Text style={styles.customer_name}>{order.delivery_details.name}</Text>
-              <Text style={styles.customer_phone}>{order.delivery_details.phone}</Text>
-              <Text style={styles.customer_email}>{order.delivery_details.email}</Text>
-              <Text style={styles.customer_address}>{order.delivery_details.address}</Text>
-              <Text style={styles.customer_pincode}>{order.delivery_details.pincode}</Text>
-              <Text style={styles.total}>Rs.{order.total}</Text>
-              <Text style={styles.itemcount}>Item Count/Qty: {order.items.length}/{totalItemQty}</Text>
+          <View style={styles.orderRowContainer}>
+            <Avatar backgroundColor="#859900" color="#859900" icon="star" size={32}
+              style={{alignItems: 'center', textAlign:'center', justifyContent: 'center',flex:1}} />
+            <View style={{flexDirection:'column',flex:4}}>
+              <View style={styles.textContainer}>
+                <Text style={styles.title} numberOfLines={1}>{order.order_no}</Text>
+                <Text style={styles.customer_name}>{order.delivery_details.name}</Text>
+                <Text style={styles.customer_phone}>{order.delivery_details.phone}</Text>
+                <Text style={styles.customer_email}>{order.delivery_details.email}</Text>
+                <Text style={styles.customer_address}>{order.delivery_details.address}</Text>
+                <Text style={styles.customer_pincode}>{order.delivery_details.pincode}</Text>
+                <Text style={styles.total}>Rs.{order.total}</Text>
+              </View>
+              <View style={styles.orderStatusContainer}>
+                <Icon size={32} style={styles.orderStatusIcon} color="#859900" name="md-cart"/>
+                <Icon size={32} style={styles.orderStatusIcon} color="#859900" name="md-cafe"/>
+                <Icon size={32} style={styles.orderStatusIcon} color="#859900" name="md-bicycle"/>
+                <Icon size={32} style={styles.orderStatusIcon} color="#859900" name="md-checkbox"/>
+                <Icon size={32} style={styles.orderStatusIcon} color="#859900" name="md-checkmark-circle-outline"/>
+              </View>
             </View>
           </View>
           <View style={styles.separator}/>

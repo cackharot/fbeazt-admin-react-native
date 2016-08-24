@@ -17,6 +17,8 @@ import {
 import Button from 'react-native-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+import Config from 'react-native-config';
+
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 import { Avatar } from 'react-native-material-design';
 
@@ -25,7 +27,11 @@ import { styles } from './app.styles';
 import {OrderList} from './components/order-list';
 import {OrderDetailsView} from './components/order-details';
 
+import {PushNotificationService} from './services/pushservice';
+
 let _navigator;
+let _deviceToken;
+
 BackAndroid.addEventListener('hardwareBackPress', () => {
   if (_navigator && _navigator.getCurrentRoutes().length > 1) {
     _navigator.pop();
@@ -35,48 +41,6 @@ BackAndroid.addEventListener('hardwareBackPress', () => {
 });
 
 var PushNotification = require('react-native-push-notification');
-
-PushNotification.configure({
-  // (optional) Called when Token is generated (iOS and Android)
-  onRegister: function (token) {
-    console.log('TOKEN:', token);
-  },
-  // (required) Called when a remote or local notification is opened or received
-  onNotification: function (notification) {
-    console.log('NOTIFICATION:', notification);
-  },
-  // ANDROID ONLY: (optional) GCM Sender ID.
-  senderID: "280436316587",
-  // IOS ONLY (optional): default: all - Permissions to register.
-  permissions: {
-    alert: true,
-    badge: true,
-    sound: true
-  },
-  popInitialNotification: true,
-  requestPermissions: true,
-});
-
-// PushNotification.localNotification({
-//     id: 0,
-//     title: "New Order", // (optional)
-//     ticker: "New Order", // (optional)
-//     autoCancel: true,
-//     default: true,
-//     largeIcon: "ic_launcher", // (optional) default: "ic_launcher"
-//     smallIcon: "ic_notification", // (optional) default: "ic_notification" with fallback for "ic_launcher"
-//     bigText: "Yay! New order from cusomter for Rs.400 (bigText)", // (optional) default: "message" prop
-//     subText: "New Order", // (optional) default: none
-//     color: "red", // (optional) default: system default
-//     vibrate: true, // (optional) default: true
-//     vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
-//     tag: 'new_order', // (optional) add tag to message
-//     group: "order", // (optional) add group to message
-//     /* iOS and Android properties */
-//     message: "Yay! New order from cusomter for Rs.400", // (required)
-//     playSound: true, // (optional) default: true
-//     number: 1 // (optional) default: none (Cannot be zero)
-// });
 
 class FbeaztAdmin extends Component {
   constructor(props) {
@@ -105,10 +69,10 @@ class FbeaztAdmin extends Component {
     if (!this.state.user) {
       return (
         <View style={styles.container}>
-          <Text style={{ fontSize: 32, fontWeight: 'bold', marginBottom: 20 }}>
+          <Text style={{ fontSize: 32, fontFamily: 'chunkfive', marginBottom: 20 }}>
             Foodbeazt Admin App
           </Text>
-          <Text style={{ marginBottom: 30 }}>
+          <Text style={{ marginBottom: 30, fontFamily: 'opensans' }}>
             SignIn to start!
           </Text>
           <GoogleSigninButton
@@ -151,12 +115,12 @@ class FbeaztAdmin extends Component {
 
   _renderMenuItem(item) {
     return(
-      <Button onPress={()=> this._onItemSelect(item.title)} style={styles.menu_btn}>
-        <View>
-          <Icon name={item.icon}/>
-          <Text>{item.title}</Text>
-        </View>
-      </Button>
+      <Icon.Button name={item.icon}
+        onPress={()=> this._onItemSelect(item.title)} style={styles.menu_btn}
+        color="#d33682" size={22} borderWidth={0}
+        backgroundColor="#F5FCFF" borderRadius={0}>
+        {item.title}
+      </Icon.Button>
     );
   }
 
@@ -167,9 +131,12 @@ class FbeaztAdmin extends Component {
         break;
       default:
         console.log('Selected menu = ' + item);
+        _navigator.push({
+          id: item,
+          title: item
+        });
         break;
     }
-    // Add the code to push a scene in navigation stack, we’ll do it in a few
   }
 
   openDrawer() {
@@ -180,6 +147,7 @@ class FbeaztAdmin extends Component {
     _navigator = navigator;
     switch (route.id) {
       case 'home':
+      case 'Orders':
         return (<OrderList
           title='Orders'
           navigator={navigator}
@@ -196,6 +164,24 @@ class FbeaztAdmin extends Component {
           title={route.title} />);
       case 'back':
         _navigator.pop();
+        break;
+      default:
+        console.log('No route available for :' + route.id);
+        return (
+          <View underlayColor='#dddddd'>
+            <Icon.ToolbarAndroid style={styles.toolbar}
+              navIconName="md-arrow-back"
+              title="No Found!"
+              navIcon={require('./assets/icons/ic_arrow_back_black_24dp.png') }
+              onIconClicked={()=>{
+                _navigator.pop();
+              }}
+              titleColor={'#FFFFFF'}/>
+            <Text>
+              Route not found :(
+            </Text>
+          </View>
+        );
     }
   }
 
@@ -204,13 +190,16 @@ class FbeaztAdmin extends Component {
       await GoogleSignin.hasPlayServices({ autoResolve: true });
       await GoogleSignin.configure({
         // scopes: ['https://www.googleapis.com/auth/calendar'],
-        webClientId: '280436316587-pc2v79112kdqu0jiruu56m92s8nr4s42.apps.googleusercontent.com',
+        webClientId: Config.WEB_CLIENT_ID,
         offlineAccess: false
       });
 
       const user = await GoogleSignin.currentUserAsync();
       if (user) {
         console.log(user.email);
+        if(!_deviceToken){
+          this._configurePushNotification(user);
+        }
       }
       this.setState({ user });
     }
@@ -224,6 +213,7 @@ class FbeaztAdmin extends Component {
       .then((user) => {
         console.log(user);
         this.setState({ user: user });
+        this._configurePushNotification(user);
       })
       .catch((err) => {
         console.log('WRONG SIGNIN', err);
@@ -231,11 +221,70 @@ class FbeaztAdmin extends Component {
       .done();
   }
 
+  _configurePushNotification(user){
+    let that = this;
+    PushNotification.configure({
+      // (optional) Called when Token is generated (iOS and Android)
+      onRegister: function (token) {
+        _deviceToken = token;
+        console.log('TOKEN:', token);
+        let service = new PushNotificationService();
+        service.register(_deviceToken);
+      },
+      // (required) Called when a remote or local notification is opened or received
+      onNotification: function (notification) {
+        console.log('NOTIFICATION:', notification);
+        if(notification.foreground === true && notification.userInteraction === false && notification['google.message_id']){
+          that._showLocalNotification(notification);
+        }
+      },
+      // ANDROID ONLY: (optional) GCM Sender ID.
+      senderID: Config.GCM_SENDER_ID,
+      // IOS ONLY (optional): default: all - Permissions to register.
+      permissions: {
+        alert: true,
+        badge: true,
+        sound: true
+      },
+      popInitialNotification: true,
+      requestPermissions: true,
+    });
+  }
+
+  _showLocalNotification(notification) {
+    let msg = notification.message;
+    let title = notification.title;
+    PushNotification.localNotification({
+      id: 0,
+      title: title,
+      autoCancel: true,
+      default: true,
+      largeIcon: "ic_launcher", // (optional) default: "ic_launcher"
+      smallIcon: "ic_notification", // (optional) default: "ic_notification" with fallback for "ic_launcher"
+      bigText: msg, // (optional) default: "message" prop
+      // subText: "New Order", // (optional) default: none
+      // color: "red", // (optional) default: system default
+      vibrate: true, // (optional) default: true
+      vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
+      // tag: 'new_order', // (optional) add tag to message
+      // group: "order", // (optional) add group to message
+      /* iOS and Android properties */
+      message: msg, // (required)
+      playSound: true, // (optional) default: true
+      number: 1 // (optional) default: none (Cannot be zero)
+    });
+  }
+
   _signOut() {
-    GoogleSignin.revokeAccess().then(() => GoogleSignin.signOut()).then(() => {
-      this.setState({ user: null });
-    })
-      .done();
+    GoogleSignin.revokeAccess().then(() => GoogleSignin.signOut())
+      .then(() => {
+        this.setState({ user: null });
+        if(_deviceToken){
+          let service = new PushNotificationService();
+          service.unregister(_deviceToken);
+        }
+        _deviceToken = null;
+      }).done();
   }
 }
 

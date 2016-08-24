@@ -10,16 +10,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 
-import {
-  Checkbox
-  , List
-  , Ripple
-  , Toolbar
-  , Button
-  , Card
-} from 'react-native-material-design';
-
-import Icon from 'react-native-vector-icons/EvilIcons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import { styles } from '../app.styles';
 
