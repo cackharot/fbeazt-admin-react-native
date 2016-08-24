@@ -11,7 +11,8 @@ import {
   TouchableOpacity,
   TouchableHighlight,
   Navigator,
-  DrawerLayoutAndroid
+  DrawerLayoutAndroid,
+  AsyncStorage
 } from 'react-native';
 
 import Button from 'react-native-button';
@@ -30,7 +31,6 @@ import {OrderDetailsView} from './components/order-details';
 import {PushNotificationService} from './services/pushservice';
 
 let _navigator;
-let _deviceToken;
 
 BackAndroid.addEventListener('hardwareBackPress', () => {
   if (_navigator && _navigator.getCurrentRoutes().length > 1) {
@@ -196,10 +196,18 @@ class FbeaztAdmin extends Component {
 
       const user = await GoogleSignin.currentUserAsync();
       if (user) {
-        console.log(user.email);
-        if(!_deviceToken){
-          this._configurePushNotification(user);
-        }
+        console.info('Logged in user: ' + user.email);
+        let that = this;
+        AsyncStorage.getItem('deviceToken').then((token)=>{
+          console.info('Device token: ' + token)
+          if(!token){
+            // that._configurePushNotification(user);
+          }
+        })
+        .catch((e)=>{
+          console.error(e);
+        })
+        .done();
       }
       this.setState({ user });
     }
@@ -226,10 +234,13 @@ class FbeaztAdmin extends Component {
     PushNotification.configure({
       // (optional) Called when Token is generated (iOS and Android)
       onRegister: function (token) {
-        _deviceToken = token;
         console.log('TOKEN:', token);
         let service = new PushNotificationService();
-        service.register(_deviceToken);
+        service.register(token)
+          .catch((e)=>{
+            console.error(e);
+          });;
+        AsyncStorage.setItem('deviceToken', token['token']);
       },
       // (required) Called when a remote or local notification is opened or received
       onNotification: function (notification) {
@@ -279,11 +290,20 @@ class FbeaztAdmin extends Component {
     GoogleSignin.revokeAccess().then(() => GoogleSignin.signOut())
       .then(() => {
         this.setState({ user: null });
-        if(_deviceToken){
-          let service = new PushNotificationService();
-          service.unregister(_deviceToken);
-        }
-        _deviceToken = null;
+        AsyncStorage.getItem('deviceToken').then((token)=>{
+          if(token){
+            let service = new PushNotificationService();
+            service.unregister(token)
+              .catch((e)=>{
+                console.error(e);
+              });
+          }
+          AsyncStorage.removeItem('deviceToken');
+        })
+        .catch((e)=>{
+          console.error(e);
+        })
+        .done();
       }).done();
   }
 }
