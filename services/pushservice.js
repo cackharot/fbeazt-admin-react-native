@@ -29,10 +29,7 @@ export class PushNotificationService {
           device_token: deviceToken
         })
       })
-      .then((response) => response.json())
-      .catch((error) => {
-        console.error(error);
-      });
+      .then((response) => response.json());
   }
 
   unregister(deviceToken) {
@@ -44,9 +41,6 @@ export class PushNotificationService {
           device_token: deviceToken
         })
       })
-      .then((response) => response.json())
-      .catch((error) => {
-        console.error(error);
-      });
+      .then((response) => response.json());
   }
 }

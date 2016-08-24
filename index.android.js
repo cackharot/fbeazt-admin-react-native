@@ -106,6 +106,9 @@ class FbeaztAdmin extends Component {
           renderNavigationView={() => navigationView}>
           <Navigator
             initialRoute={{ id: 'home', openDrawer: this.openDrawer.bind(this) }}
+            configureScene={() => {
+                            return Navigator.SceneConfigs.FadeAndroid;
+                           }}
             renderScene={this.navigatorRenderScene}
             />
         </DrawerLayoutAndroid>
@@ -248,6 +251,9 @@ class FbeaztAdmin extends Component {
         if(notification.foreground === true && notification.userInteraction === false && notification['google.message_id']){
           that._showLocalNotification(notification);
         }
+        if(notification.userInteraction === true){
+          that._tryNavigateOnNotification(notification);
+        }
       },
       // ANDROID ONLY: (optional) GCM Sender ID.
       senderID: Config.GCM_SENDER_ID,
@@ -260,6 +266,16 @@ class FbeaztAdmin extends Component {
       popInitialNotification: true,
       requestPermissions: true,
     });
+  }
+
+  _tryNavigateOnNotification(notification) {
+    if(notification.order_id){
+      _.navigator.push({
+        id: 'orderdetails',
+        title: '#' + notification.order_no + ' Details',
+        passProps: { order_id: notification.order_id }
+      });
+    }
   }
 
   _showLocalNotification(notification) {

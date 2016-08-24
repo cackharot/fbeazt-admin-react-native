@@ -23,10 +23,7 @@ export class OrderService {
       {
         headers: this.headers
       })
-      .then((response) => response.json())
-      .catch((error) => {
-        console.error(error);
-      });
+      .then((response) => response.json());
   }
 
   getOrderDetail(order_id) {
@@ -34,9 +31,6 @@ export class OrderService {
       {
         headers: this.headers
       })
-      .then((response) => response.json())
-      .catch((error) => {
-        console.error(error);
-      });
+      .then((response) => response.json());
   }
 }
