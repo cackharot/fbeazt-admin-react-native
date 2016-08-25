@@ -1,7 +1,7 @@
 import React from 'react';
 import Config from 'react-native-config';
 
-import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
+import {GoogleSignin} from 'react-native-google-signin';
 
 export class OrderService {
   constructor() {

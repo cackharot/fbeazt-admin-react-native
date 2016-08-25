@@ -32,9 +32,8 @@ import { styles } from '../app.styles';
 
 import {OrderService} from '../services/orderservice';
 
-export class OrderDetailsView extends Component {
+export default class OrderDetailsView extends Component {
   static propTypes = {
-    title: React.PropTypes.string.isRequired,
     order_id: React.PropTypes.string.isRequired,
   };
 
@@ -67,48 +66,62 @@ export class OrderDetailsView extends Component {
   }
 
   render() {
-    var spinner = this.state.isLoading ?
+    let spinner = this.state.isLoading ?
       (<ActivityIndicator
         animating={this.state.isLoading}
         style={[styles.centering, { height: 80 }]}
         size="large"
         />) : (<View/>);
-    var order = this.state.order;
+    let orderDetailView = this.getOrderDetailView();
 
-    var orderDetailView = (<View/>);
-    if(order){
-      var totalItemQty = order.items.reduce((i, x) => i + x.quantity, 0);
-      let orderDate = new Date(order.created_at.$date)
-      let dateStr = this.formatDate(orderDate);
-      var moreMsg = [
-        {
-          text: (<Text>{order.delivery_details.name}</Text>),
-        },
-        {
-          text: (<Text><Icon name="md-call" />{order.delivery_details.phone} <Icon name="md-mail" /> {order.delivery_details.email}</Text>)
-        },
-        {
-          text: (<Text><Icon name="md-locate" /> {order.delivery_details.address}</Text>)
-        },
-        {
-          text: (<Text><Icon name="md-compass" /> {order.delivery_details.landmark} - {order.delivery_details.pincode}</Text>)
-        },
-        {
-          text: (<Text><Icon name="md-calendar" /> {dateStr}</Text>)
-        }
-      ]
-      let statusIcon = this.getStatusIcon(order.status.toUpperCase());
-      orderDetailView = (<View>
-          <List
-            key={order._id.$oid}
-            keyId={order._id.$oid}
-            primaryText={order.order_no}
-            secondaryTextMoreLine={moreMsg}
-            primaryColor={'#002b36'}
-            lines={6}
-            captionText={'Rs.' + order.total}
-            leftAvatar={<Avatar icon={statusIcon} />}
-          />
+    return (
+      <View underlayColor='#dddddd'>
+        <ScrollView>
+          {spinner}
+          {orderDetailView}
+        </ScrollView>
+      </View>
+    );
+  }
+
+  getOrderDetailView() {
+    let order = this.state.order;
+    if(!order){
+      return (<View/>);
+    }
+    let totalItemQty = order.items.reduce((i, x) => i + x.quantity, 0);
+    let orderDate = new Date(order.created_at.$date)
+    let dateStr = this.formatDate(orderDate);
+    let moreMsg = [
+      {
+        text: (<Text>{order.delivery_details.name}</Text>),
+      },
+      {
+        text: (<Text><Icon name="md-call" />{order.delivery_details.phone} <Icon name="md-mail" /> {order.delivery_details.email}</Text>)
+      },
+      {
+        text: (<Text><Icon name="md-locate" /> {order.delivery_details.address}</Text>)
+      },
+      {
+        text: (<Text><Icon name="md-compass" /> {order.delivery_details.landmark} - {order.delivery_details.pincode}</Text>)
+      },
+      {
+        text: (<Text><Icon name="md-calendar" /> {dateStr}</Text>)
+      }
+    ]
+    let statusIcon = this.getStatusIcon(order.status.toUpperCase());
+    return (
+      <View>
+        <List
+          key={order._id.$oid}
+          keyId={order._id.$oid}
+          primaryText={order.order_no}
+          secondaryTextMoreLine={moreMsg}
+          primaryColor={'#002b36'}
+          lines={6}
+          captionText={'Rs.' + order.total}
+          leftAvatar={<Avatar icon={statusIcon} />}
+        />
         <View style={styles.separator}/>
         <View style={{paddingLeft:16}}>
           <Text style={{color:'#002b36'}}>Order status: {order.status}</Text>
@@ -128,19 +141,7 @@ export class OrderDetailsView extends Component {
           />
         ))}
         <View style={styles.separator}/>
-      </View>)
-    }
-    return (
-      <View underlayColor='#dddddd'>
-        <Icon.ToolbarAndroid style={styles.toolbar}
-          navIconName="md-arrow-back"
-          title={this.props.title}
-          navIcon={require('../assets/icons/ic_arrow_back_black_24dp.png') }
-          onIconClicked={this.props.navigator.pop}
-          titleColor={'#FFFFFF'}/>
-        {spinner}
-        {orderDetailView}
-      </View>
+       </View>
     );
   }
 

@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {
   AppRegistry,
   StyleSheet,
-  BackAndroid,
   Text,
   View,
   ListView,
@@ -23,12 +22,16 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Config from 'react-native-config';
 
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
-import {Avatar,Ripple} from 'react-native-material-design';
+import {Avatar, Drawer, Divider, COLOR, TYPO, Ripple} from 'react-native-material-design';
 
 import {styles} from './app.styles';
 
-import { List } from './components/List';
-import { LoginView } from './components/Login';
+import {List} from './components/List';
+import {LoginView} from './components/Login';
+
+import {Toolbar} from './components/Toolbar';
+import {Navigation} from './components/Navigation';
+import {Navigate} from './utils/Navigate';
 
 import {OrderList} from './components/order-list';
 import {OrderDetailsView} from './components/order-details';
@@ -36,40 +39,45 @@ import {OrderDetailsView} from './components/order-details';
 import {PushNotificationService} from './services/pushservice';
 
 let DEVICE_TOKEN_KEY = 'deviceToken';
-let _navigator;
-
-BackAndroid.addEventListener('hardwareBackPress', () => {
-  if (_navigator && _navigator.getCurrentRoutes().length > 1) {
-    _navigator.pop();
-    return true;
-  }
-  return false;
-});
 
 var PushNotification = require('react-native-push-notification');
 
 class FbeaztAdmin extends Component {
+  static childContextTypes = {
+		drawer: React.PropTypes.object,
+		navigator: React.PropTypes.object
+	};
+
   constructor(props) {
     super(props);
     this.state = {
       isOnline: false,
       user: null,
-      menuDataSource: new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2
-      })
+      drawer: null,
+      navigator: null,
     };
   }
 
+  getChildContext = () => {
+		return {
+			drawer: this.state.drawer,
+			navigator: this.state.navigator
+		}
+	};
+
+  setDrawer = (drawer) => {
+		this.setState({
+			drawer
+		});
+	};
+
+	setNavigator = (navigator) => {
+		this.setState({
+			navigator: new Navigate(navigator)
+		});
+	};
+
   componentDidMount() {
-    this.setState({
-      menuDataSource: this.state.menuDataSource.cloneWithRows([
-        { title: 'Orders', icon: 'md-cart'},
-        { title: 'Stores', icon: 'md-albums'},
-        { title: 'Dishes', icon: 'md-cafe'},
-        { title: 'Popular', icon: 'md-star'},
-        { title: 'Log out', icon: 'md-log-out'},
-      ])
-    });
     this._checkInternetConnectivity();
   }
 
@@ -142,110 +150,42 @@ class FbeaztAdmin extends Component {
       );
     }
     if (this.state.user) {
-      var navigationView = (
-        <View style={styles.container}>
-          <Avatar image={<Image source={{ uri: this.state.user.photo }} />} />
-          <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 20 }}>
-            Welcome {this.state.user.name}
-          </Text>
-          <View style={styles.drawer_content_container}>
-            <ListView
-                dataSource={this.state.menuDataSource}
-                renderRow={this._renderMenuItem.bind(this)}
-            />
-          </View>
-        </View>
-      );
+      const { drawer, navigator } = this.state;
+      const navView = React.createElement(Navigation);
       return (
         <DrawerLayoutAndroid
           drawerWidth={300}
-          ref={'DRAWER'}
+          ref={(drawer) => { !this.state.drawer ? this.setDrawer(drawer) : null }}
           drawerPosition={DrawerLayoutAndroid.positions.Left}
-          renderNavigationView={() => navigationView}>
-          <Navigator
-            initialRoute={{ id: 'home', openDrawer: this.openDrawer.bind(this) }}
-            configureScene={() => {
-                            return Navigator.SceneConfigs.FadeAndroid;
-                           }}
-            renderScene={this.navigatorRenderScene}
-            />
+          renderNavigationView={() => {
+            if (drawer && navigator) {
+                return navView;
+            }
+            return null;
+          }}>
+          {drawer &&
+            <Navigator
+              initialRoute={Navigate.getInitialRoute()}
+              navigationBar={<Toolbar onIconPress={drawer.openDrawer} />}
+              configureScene={() => {
+                              return Navigator.SceneConfigs.FadeAndroid;
+                            }}
+              ref={(navigator) => { !this.state.navigator ? this.setNavigator(navigator) : null }}
+              renderScene={(route) => {
+                        if (this.state.navigator && route.component) {
+                            return (
+                                <View
+                                    style={styles.scene}
+                                    showsVerticalScrollIndicator={false}>
+                                  <route.component title={route.title} path={route.path} {...route.props} />
+                                </View>
+                            );
+                        }
+                    }}
+              />
+          }
         </DrawerLayoutAndroid>
       );
-    }
-  }
-
-  _renderMenuItem(item, sectionID, rowID) {
-    return(
-      <Ripple onPress={()=> this._onItemSelect(item.title)}>
-        <List
-          keyId={rowID}
-          primaryText={item.title}
-          primaryColor={'#d33682'}
-          leftAvatar={<Icon name={item.icon} style={{color:'#d33682',fontSize:28}}/>}
-          onLeftIconClicked={() => this._onItemSelect(item.title) }
-        />
-      </Ripple>
-    );
-  }
-
-  _onItemSelect(item) {
-    switch(item){
-      case 'Log out':
-        this._signOut();
-        break;
-      default:
-        console.log('Selected menu = ' + item);
-        _navigator.push({
-          id: item,
-          title: item
-        });
-        break;
-    }
-  }
-
-  openDrawer() {
-    this.refs['DRAWER'].openDrawer();
-  }
-
-  navigatorRenderScene(route, navigator) {
-    _navigator = navigator;
-    switch (route.id) {
-      case 'home':
-      case 'Orders':
-        return (<OrderList
-          title='Orders'
-          navigator={navigator}
-          openDrawer={()=>{
-            if(this.initialRoute.openDrawer){
-              this.initialRoute.openDrawer();
-            }
-          }}
-          />);
-      case 'orderdetails':
-        return (<OrderDetailsView
-          navigator={navigator}
-          {...route.passProps}
-          title={route.title} />);
-      case 'back':
-        _navigator.pop();
-        break;
-      default:
-        console.log('No route available for :' + route.id);
-        return (
-          <View underlayColor='#dddddd'>
-            <Icon.ToolbarAndroid style={styles.toolbar}
-              navIconName="md-arrow-back"
-              title="No Found!"
-              navIcon={require('./assets/icons/ic_arrow_back_black_24dp.png') }
-              onIconClicked={()=>{
-                _navigator.pop();
-              }}
-              titleColor={'#FFFFFF'}/>
-            <Text>
-              Route not found :(
-            </Text>
-          </View>
-        );
     }
   }
 

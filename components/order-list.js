@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import {
   StyleSheet,
   View,
@@ -36,11 +36,11 @@ import {OrderDetailsView} from './order-details';
 
 import * as _ from 'lodash';
 
-export class OrderList extends Component {
-  static propTypes = {
-    title: React.PropTypes.string.isRequired,
-    openDrawer: React.PropTypes.func.isRequired
-  }
+export default class OrderList extends Component {
+  static contextTypes = {
+    drawer: PropTypes.object.isRequired,
+    navigator: PropTypes.object.isRequired
+  };
 
   constructor(props) {
     super(props);
@@ -93,12 +93,10 @@ export class OrderList extends Component {
   }
 
   rowPressed(order_id) {
-    var selectedOrder = this.state._orders.filter(x => x._id.$oid === order_id.$oid)[0];
-    this.props.navigator.push({
-      id: 'orderdetails',
-      title: '#' + selectedOrder.order_no + ' Details',
-      passProps: { order_id: selectedOrder._id.$oid }
-    });
+    const { navigator } = this.context;
+    let selectedOrder = this.state._orders.filter(x => x._id.$oid === order_id.$oid)[0];
+    let name = '#' + selectedOrder.order_no + ' Details';
+    navigator.forward('orderdetails', name, { order_id: selectedOrder._id.$oid });
   }
 
   formatDate(date) {
@@ -173,13 +171,8 @@ export class OrderList extends Component {
 
     return (
       <View>
-        <Icon.ToolbarAndroid style={styles.toolbar}
-          navIconName="md-menu"
-          title={this.props.title}
-          onIconClicked={this.props.openDrawer}
-          titleColor={'#FFFFFF'}/>
-        {spinner}
         <ScrollView>
+          {spinner}
           <ListView
             enableEmptySections={true}
             dataSource={this.state.orders}

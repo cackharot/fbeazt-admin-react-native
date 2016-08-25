@@ -3,6 +3,10 @@ import {
 } from 'react-native';
 
 export const styles = StyleSheet.create({
+  scene: {
+    flex: 1,
+    marginTop: 56
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
