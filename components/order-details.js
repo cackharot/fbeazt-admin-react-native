@@ -3,6 +3,7 @@ import {
   StyleSheet,
   View,
   Text,
+  Image,
   ListView,
   ScrollView,
   TouchableOpacity,
@@ -13,7 +14,7 @@ import {
 } from 'react-native';
 
 import {
-    Avatar
+  Avatar
   , Checkbox
   , Subheader
   , Divider
@@ -23,6 +24,7 @@ import {
   , Button
   , Card
   , COLOR
+  , TYPO
 } from 'react-native-material-design';
 
 import { List } from './List';
@@ -32,6 +34,10 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { styles } from '../app.styles';
 
 import {OrderService} from '../services/orderservice';
+
+import {OrderHeading} from './order-heading';
+import {OrderItemList} from './order-item-list';
+import {OrderPayment} from './order-payment';
 
 export default class OrderDetailsView extends Component {
   static propTypes = {
@@ -73,105 +79,21 @@ export default class OrderDetailsView extends Component {
         style={[styles.centering, { height: 80 }]}
         size="large"
         />) : (<View/>);
-    let orderDetailView = this.getOrderDetailView();
-
+    let order = this.state.order;
+    if (!order) {
+      return (<View/>);
+    }
     return (
       <View underlayColor='#dddddd'>
         <ScrollView>
           {spinner}
-          {orderDetailView}
+          <View>
+            <OrderHeading order={order} />
+            <OrderItemList items={order.items} />
+            <OrderPayment order={order} />
+          </View>
         </ScrollView>
       </View>
     );
-  }
-
-  getOrderDetailView() {
-    let order = this.state.order;
-    if(!order){
-      return (<View/>);
-    }
-    let totalItemQty = order.items.reduce((i, x) => i + x.quantity, 0);
-    let orderDate = new Date(order.created_at.$date)
-    let dateStr = this.formatDate(orderDate);
-    let moreMsg = [
-      {
-        text: (<Text>{order.delivery_details.name}</Text>),
-      },
-      {
-        text: (<Text><Icon name="md-call" />{order.delivery_details.phone} <Icon name="md-mail" /> {order.delivery_details.email}</Text>)
-      },
-      {
-        text: (<Text><Icon name="md-locate" /> {order.delivery_details.address}</Text>)
-      },
-      {
-        text: (<Text><Icon name="md-compass" /> {order.delivery_details.landmark} - {order.delivery_details.pincode}</Text>)
-      },
-      {
-        text: (<Text><Icon name="md-calendar" /> {dateStr}</Text>)
-      }
-    ]
-    let statusIcon = this.getStatusIcon(order.status.toUpperCase());
-    return (
-      <View>
-        <List
-          key={order._id.$oid}
-          keyId={order._id.$oid}
-          primaryText={order.order_no}
-          secondaryTextMoreLine={moreMsg}
-          primaryColor={'#002b36'}
-          lines={6}
-          captionText={'Rs.' + order.total}
-          leftAvatar={<Avatar icon={statusIcon} />}
-        />
-        <View style={styles.separator}/>
-        <View style={{paddingLeft:16}}>
-          <Text style={{color:'#002b36'}}>Order status: {order.status}</Text>
-          <Text style={{color:'#073642'}}>Payment mode: {(order.payment_type || 'COD').toUpperCase()}</Text>
-          <Text style={{color:'#586e75'}}>Payment status: {(order.payment_status || 'PAID').toUpperCase()}</Text>
-          <Text>Delivery charges: Rs. {order.delivery_charges}</Text>
-        </View>
-        <View style={styles.separator}/>
-        <Subheader text="Item details"/>
-        {order.items.map((dish, i)=> (
-          <TouchableOpacity key={i}>
-            <List
-              keyId={dish.no.toString()}
-              primaryText={dish.name}
-              secondaryText={dish.store.name}
-              captionText={'Rs.' + (dish.price_detail ? dish.price_detail.price : dish.price).toFixed(2).toString()}
-            />
-          </TouchableOpacity>
-        ))}
-        <View style={styles.separator}/>
-       </View>
-    );
-  }
-
-  getStatusIcon(status){
-    switch(status){
-      case 'PENDING':
-        return 'shopping-cart';
-      case 'PREPARING':
-        return 'schedule';
-      case 'PROGRESS':
-        return 'motorcycle';
-      case 'DELIVERED':
-        return 'check-circle';
-      case 'CANCELLED':
-        return 'highlight-off';
-      default:
-        return 'stars';
-    }
-  }
-
-  formatDate(date) {
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var ampm = hours >= 12 ? 'pm' : 'am';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? '0'+minutes : minutes;
-    var strTime = hours + ':' + minutes + ' ' + ampm;
-    return date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear() + "  " + strTime;
   }
 }
