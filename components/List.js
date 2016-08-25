@@ -8,7 +8,6 @@ const TYPO = typography;
 export class List extends Component {
 
     static propTypes = {
-        keyId: PropTypes.string.isRequired,
         primaryText: PropTypes.string.isRequired,
         secondaryText: PropTypes.string,
         captionText: PropTypes.string,
@@ -34,7 +33,6 @@ export class List extends Component {
 
     render() {
         const {
-            keyId,
             primaryText,
             secondaryText,
             leftIcon,
@@ -51,7 +49,7 @@ export class List extends Component {
         } = this.props;
 
         return (
-                <View key={keyId} style={[styles.listContainer, { marginTop: 10, height: lines > 2 ? ((lines -1) * 18 + 56) : (secondaryText ? 72 : (leftAvatar || rightAvatar ) ? 56 : 48) }]}>
+                <View style={[styles.listContainer, { marginTop: 1, height: lines > 2 ? ((lines -1) * 18 + 56) : (secondaryText ? 72 : (leftAvatar || rightAvatar ) ? 56 : 48) }]}>
                     {leftIcon &&
                         <TouchableWithoutFeedback onPress={onLeftIconClicked}>
                             <View style={[styles.leftIcon, lines > 2 && { paddingTop: 16, alignSelf: 'flex-start' }]}>
@@ -90,8 +88,8 @@ export class List extends Component {
                         }
                         {secondaryTextMoreLine &&
                             <View style={[{ height:18 }, lines > 2 && { height: 22 * (lines - 1) - 4 }]}>
-                                {secondaryTextMoreLine.map((line) => (
-                                    <Text style={[styles.secondaryText, { height: 22 }, line.style]}>
+                                {secondaryTextMoreLine.map((line, i) => (
+                                    <Text key={i} style={[styles.secondaryText, { height: 22 }, line.style]}>
                                         {line.text}
                                     </Text>
                                 ))}

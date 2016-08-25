@@ -6,6 +6,7 @@ import {
   Image,
   ListView,
   ScrollView,
+  TouchableOpacity,
   TouchableHighlight,
   ActivityIndicator,
   InteractionManager
@@ -128,19 +129,18 @@ export default class OrderList extends Component {
     ]
     let statusIcon = this.getStatusIcon(order.status.toUpperCase());
     return (
-      <List
-        keyId={order._id.$oid}
-        primaryText={order.order_no}
-        secondaryTextMoreLine={moreMsg}
-        captionText={'Rs.' + order.total}
-        primaryColor={'#002b36'}
-        rightIcon={<Icon name="md-arrow-dropright-circle" style={{color:'#2aa198',fontSize:32}}/>}
-        lines={3}
-        leftAvatar={<Avatar icon={statusIcon} />}
-        onPress={() => this.rowPressed(order._id) }
-        onRightIconClicked={() => this.rowPressed(order._id) }
-        onLeftIconClicked={() => this.rowPressed(order._id) }
-      />
+      <TouchableOpacity key={rowID} onLongPress={() => this.rowPressed(order._id)}>
+        <List
+          primaryText={order.order_no}
+          secondaryTextMoreLine={moreMsg}
+          captionText={'Rs.' + order.total}
+          primaryColor={'#002b36'}
+          rightIcon={<Icon name="md-arrow-dropright-circle" style={{color:'#2aa198',fontSize:32}}/>}
+          lines={4}
+          leftAvatar={<Avatar icon={statusIcon} />}
+        />
+        <Divider inset={true} style={{ marginTop: 0 }} />
+      </TouchableOpacity>
     );
   }
 
@@ -170,7 +170,7 @@ export default class OrderList extends Component {
         />) : (<View/>);
 
     return (
-      <View>
+      <View style={{flex:1}}>
         <ScrollView>
           {spinner}
           <ListView

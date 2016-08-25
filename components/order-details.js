@@ -5,6 +5,7 @@ import {
   Text,
   ListView,
   ScrollView,
+  TouchableOpacity,
   TouchableHighlight,
   ToolbarAndroid,
   ActivityIndicator,
@@ -132,13 +133,14 @@ export default class OrderDetailsView extends Component {
         <View style={styles.separator}/>
         <Subheader text="Item details"/>
         {order.items.map((dish, i)=> (
-          <List
-            key={i}
-            keyId={dish.no.toString()}
-            primaryText={dish.name}
-            secondaryText={dish.store.name}
-            captionText={'Rs.' + (dish.price_detail ? dish.price_detail.price : dish.price).toFixed(2).toString()}
-          />
+          <TouchableOpacity key={i}>
+            <List
+              keyId={dish.no.toString()}
+              primaryText={dish.name}
+              secondaryText={dish.store.name}
+              captionText={'Rs.' + (dish.price_detail ? dish.price_detail.price : dish.price).toFixed(2).toString()}
+            />
+          </TouchableOpacity>
         ))}
         <View style={styles.separator}/>
        </View>
