@@ -7,7 +7,8 @@ import {
   ScrollView,
   TouchableHighlight,
   ToolbarAndroid,
-  ActivityIndicator
+  ActivityIndicator,
+  InteractionManager
 } from 'react-native';
 
 import {
@@ -50,6 +51,12 @@ export class OrderDetailsView extends Component {
     this.setState({
       isLoading: true
     });
+    InteractionManager.runAfterInteractions(() => {
+      this.loadOrderDetail();
+    });
+  }
+
+  loadOrderDetail() {
     this.service.getOrderDetail(this.props.order_id).then(x => {
       // console.log(x);
       this.setState({

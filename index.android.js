@@ -12,7 +12,9 @@ import {
   TouchableHighlight,
   Navigator,
   DrawerLayoutAndroid,
-  AsyncStorage
+  AsyncStorage,
+  NetInfo,
+  InteractionManager
 } from 'react-native';
 
 import Button from 'react-native-button';
@@ -21,15 +23,18 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Config from 'react-native-config';
 
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
-import { Avatar } from 'react-native-material-design';
+import {Avatar} from 'react-native-material-design';
 
-import { styles } from './app.styles';
+import {styles} from './app.styles';
+
+import { List } from './components/List';
 
 import {OrderList} from './components/order-list';
 import {OrderDetailsView} from './components/order-details';
 
 import {PushNotificationService} from './services/pushservice';
 
+let DEVICE_TOKEN_KEY = 'deviceToken';
 let _navigator;
 
 BackAndroid.addEventListener('hardwareBackPress', () => {
@@ -46,6 +51,7 @@ class FbeaztAdmin extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isOnline: false,
       user: null,
       menuDataSource: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2
@@ -62,10 +68,43 @@ class FbeaztAdmin extends Component {
         { title: 'Log out', icon: 'md-log-out'},
       ])
     });
+    this._checkInternetConnectivity();
     this._setupGoogleSignin();
   }
 
+  _checkInternetConnectivity() {
+    NetInfo.isConnected.fetch().then(isConnected => {
+      console.log('First, Device is ' + (isConnected ? 'online' : 'offline'));
+      this.setState({
+        isOnline: isConnected
+      });
+    });
+    NetInfo.isConnected.addEventListener(
+      'change',
+      this._handleFirstConnectivityChange
+    );
+  }
+
+  _handleFirstConnectivityChange(isConnected) {
+    console.log('Then, Device is ' + (isConnected ? 'online' : 'offline'));
+    NetInfo.isConnected.removeEventListener(
+      'change',
+      this._handleFirstConnectivityChange
+    );
+  }
+
+  getOfflineView() {
+    return (
+      <View>
+        <Text>You need internet connectivity to access this app!</Text>
+      </View>
+    );
+  }
+
   render() {
+    if(!this.state.isOnline){
+      return this.getOfflineView();
+    }
     if (!this.state.user) {
       return (
         <View style={styles.container}>
@@ -93,7 +132,7 @@ class FbeaztAdmin extends Component {
           <View style={styles.drawer_content_container}>
             <ListView
                 dataSource={this.state.menuDataSource}
-                renderRow={(item) => this._renderMenuItem(item)}
+                renderRow={this._renderMenuItem.bind(this)}
             />
           </View>
         </View>
@@ -116,14 +155,16 @@ class FbeaztAdmin extends Component {
     }
   }
 
-  _renderMenuItem(item) {
+  _renderMenuItem(item, sectionID, rowID) {
     return(
-      <Icon.Button name={item.icon}
-        onPress={()=> this._onItemSelect(item.title)} style={styles.menu_btn}
-        color="#d33682" size={22} borderWidth={0}
-        backgroundColor="#F5FCFF" borderRadius={0}>
-        {item.title}
-      </Icon.Button>
+      <List
+        keyId={rowID}
+        primaryText={item.title}
+        primaryColor={'#d33682'}
+        leftAvatar={<Icon name={item.icon} style={{color:'#d33682',fontSize:28}}/>}
+        onPress={()=> this._onItemSelect(item.title)}
+        onLeftIconClicked={() => this._onItemSelect(item.title) }
+      />
     );
   }
 
@@ -203,7 +244,7 @@ class FbeaztAdmin extends Component {
       if (user) {
         console.info('Logged in user: ' + user.email);
         let that = this;
-        AsyncStorage.getItem('deviceToken').then((token)=>{
+        AsyncStorage.getItem(DEVICE_TOKEN_KEY).then((token)=>{
           console.info('Device token: ' + token)
           if(!token){
             // that._configurePushNotification(user);
@@ -240,12 +281,14 @@ class FbeaztAdmin extends Component {
       // (optional) Called when Token is generated (iOS and Android)
       onRegister: function (token) {
         console.log('TOKEN:', token);
-        let service = new PushNotificationService();
-        service.register(token)
-          .catch((e)=>{
-            console.error(e);
-          });;
-        AsyncStorage.setItem('deviceToken', token['token']);
+        InteractionManager.runAfterInteractions(() => {
+          let service = new PushNotificationService();
+          service.register(token)
+            .catch((e)=>{
+              console.error(e);
+            });;
+          AsyncStorage.setItem(DEVICE_TOKEN_KEY, token['token']);
+        });
       },
       // (required) Called when a remote or local notification is opened or received
       onNotification: function (notification) {
@@ -308,15 +351,17 @@ class FbeaztAdmin extends Component {
     GoogleSignin.revokeAccess().then(() => GoogleSignin.signOut())
       .then(() => {
         this.setState({ user: null });
-        AsyncStorage.getItem('deviceToken').then((token)=>{
+        AsyncStorage.getItem(DEVICE_TOKEN_KEY).then((token)=>{
           if(token){
-            let service = new PushNotificationService();
-            service.unregister(token)
-              .catch((e)=>{
-                console.error(e);
-              });
+            InteractionManager.runAfterInteractions(() => {
+              let service = new PushNotificationService();
+              service.unregister(token)
+                .catch((e)=>{
+                  console.error(e);
+                });
+            });
           }
-          AsyncStorage.removeItem('deviceToken');
+          AsyncStorage.removeItem(DEVICE_TOKEN_KEY);
         })
         .catch((e)=>{
           console.error(e);

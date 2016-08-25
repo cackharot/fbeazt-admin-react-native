@@ -7,7 +7,8 @@ import {
   ListView,
   ScrollView,
   TouchableHighlight,
-  ActivityIndicator
+  ActivityIndicator,
+  InteractionManager
 } from 'react-native';
 
 import {
@@ -56,7 +57,9 @@ export class OrderList extends Component {
     this.setState({
       isLoading: true
     });
-    this.loadOrders();
+    InteractionManager.runAfterInteractions(() => {
+      this.loadOrders();
+    });
   }
 
   loadOrders() {
@@ -180,7 +183,7 @@ export class OrderList extends Component {
           <ListView
             enableEmptySections={true}
             dataSource={this.state.orders}
-            renderRow={this.renderRow.bind(this) }
+            renderRow={this.renderRow.bind(this)}
             />
         </ScrollView>
       </View>
