@@ -14,20 +14,21 @@ import {
   DrawerLayoutAndroid,
   AsyncStorage,
   NetInfo,
-  InteractionManager
+  InteractionManager,
+  ToastAndroid
 } from 'react-native';
 
-import Button from 'react-native-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import Config from 'react-native-config';
 
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
-import {Avatar} from 'react-native-material-design';
+import {Avatar,Ripple} from 'react-native-material-design';
 
 import {styles} from './app.styles';
 
 import { List } from './components/List';
+import { LoginView } from './components/Login';
 
 import {OrderList} from './components/order-list';
 import {OrderDetailsView} from './components/order-details';
@@ -58,6 +59,7 @@ class FbeaztAdmin extends Component {
       })
     };
   }
+
   componentDidMount() {
     this.setState({
       menuDataSource: this.state.menuDataSource.cloneWithRows([
@@ -69,7 +71,6 @@ class FbeaztAdmin extends Component {
       ])
     });
     this._checkInternetConnectivity();
-    this._setupGoogleSignin();
   }
 
   _checkInternetConnectivity() {
@@ -101,25 +102,43 @@ class FbeaztAdmin extends Component {
     );
   }
 
+  _loginSuccess(user){
+    this.setState({
+      user: user
+    })
+    ToastAndroid.show('Sigin success!', ToastAndroid.SHORT);
+    let that = this;
+    AsyncStorage.getItem(DEVICE_TOKEN_KEY).then((token)=>{
+      console.info('Device token: ' + token)
+      if(!token){
+        that._configurePushNotification(user);
+      }
+    })
+    .catch((e)=>{
+      console.error(e);
+    })
+    .done();
+  }
+
+  _loginFailure(errorMessage){
+    this.setState({
+      user: null
+    })
+    if(errorMessage!=='Not logged in!'){
+      ToastAndroid.show('Sigin Error!\n' + errorMessage, ToastAndroid.SHORT);
+    }
+  }
+
   render() {
     if(!this.state.isOnline){
       return this.getOfflineView();
     }
     if (!this.state.user) {
       return (
-        <View style={styles.container}>
-          <Text style={{ fontSize: 32, fontFamily: 'chunkfive', marginBottom: 20 }}>
-            Foodbeazt Admin App
-          </Text>
-          <Text style={{ marginBottom: 30, fontFamily: 'opensans' }}>
-            SignIn to start!
-          </Text>
-          <GoogleSigninButton
-            style={{ width: 312, height: 48 }}
-            size={GoogleSigninButton.Size.Wide}
-            color={GoogleSigninButton.Color.Dark}
-            onPress={this._signIn.bind(this) }/>
-        </View>
+        <LoginView title="Foodbeazt Admin"
+          onSuccess={this._loginSuccess.bind(this)}
+          onFailure={this._loginFailure.bind(this)}
+        />
       );
     }
     if (this.state.user) {
@@ -157,14 +176,15 @@ class FbeaztAdmin extends Component {
 
   _renderMenuItem(item, sectionID, rowID) {
     return(
-      <List
-        keyId={rowID}
-        primaryText={item.title}
-        primaryColor={'#d33682'}
-        leftAvatar={<Icon name={item.icon} style={{color:'#d33682',fontSize:28}}/>}
-        onPress={()=> this._onItemSelect(item.title)}
-        onLeftIconClicked={() => this._onItemSelect(item.title) }
-      />
+      <Ripple onPress={()=> this._onItemSelect(item.title)}>
+        <List
+          keyId={rowID}
+          primaryText={item.title}
+          primaryColor={'#d33682'}
+          leftAvatar={<Icon name={item.icon} style={{color:'#d33682',fontSize:28}}/>}
+          onLeftIconClicked={() => this._onItemSelect(item.title) }
+        />
+      </Ripple>
     );
   }
 
@@ -229,53 +249,7 @@ class FbeaztAdmin extends Component {
     }
   }
 
-  async _setupGoogleSignin() {
-    try {
-      console.info('App Config', Config);
-      let gsConfig = {
-        // scopes: ['https://www.googleapis.com/auth/calendar'],
-        webClientId: Config.WEB_CLIENT_ID,
-        offlineAccess: false
-      };
-      await GoogleSignin.hasPlayServices({ autoResolve: true });
-      await GoogleSignin.configure(gsConfig);
-
-      const user = await GoogleSignin.currentUserAsync();
-      if (user) {
-        console.info('Logged in user: ' + user.email);
-        let that = this;
-        AsyncStorage.getItem(DEVICE_TOKEN_KEY).then((token)=>{
-          console.info('Device token: ' + token)
-          if(!token){
-            // that._configurePushNotification(user);
-          }
-        })
-        .catch((e)=>{
-          console.error(e);
-        })
-        .done();
-      }
-      this.setState({ user });
-    }
-    catch (err) {
-      console.log("Play services error", err.code, err.message);
-    }
-  }
-
-  _signIn() {
-    GoogleSignin.signIn()
-      .then((user) => {
-        console.log(user);
-        this.setState({ user: user });
-        this._configurePushNotification(user);
-      })
-      .catch((err) => {
-        console.log('WRONG SIGNIN', err);
-      })
-      .done();
-  }
-
-  _configurePushNotification(user){
+  _configurePushNotification(){
     let that = this;
     PushNotification.configure({
       // (optional) Called when Token is generated (iOS and Android)
@@ -331,19 +305,14 @@ class FbeaztAdmin extends Component {
       title: title,
       autoCancel: true,
       default: true,
-      largeIcon: "ic_launcher", // (optional) default: "ic_launcher"
-      smallIcon: "ic_notification", // (optional) default: "ic_notification" with fallback for "ic_launcher"
-      bigText: msg, // (optional) default: "message" prop
-      // subText: "New Order", // (optional) default: none
-      // color: "red", // (optional) default: system default
-      vibrate: true, // (optional) default: true
-      vibration: 300, // vibration length in milliseconds, ignored if vibrate=false, default: 1000
-      // tag: 'new_order', // (optional) add tag to message
-      // group: "order", // (optional) add group to message
-      /* iOS and Android properties */
-      message: msg, // (required)
-      playSound: true, // (optional) default: true
-      number: 1 // (optional) default: none (Cannot be zero)
+      largeIcon: "ic_launcher",
+      smallIcon: "ic_notification",
+      bigText: msg,
+      vibrate: true,
+      vibration: 300,
+      message: msg,
+      playSound: true,
+      number: 1
     });
   }
 
