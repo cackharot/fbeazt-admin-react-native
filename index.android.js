@@ -190,12 +190,14 @@ class FbeaztAdmin extends Component {
 
   async _setupGoogleSignin() {
     try {
-      await GoogleSignin.hasPlayServices({ autoResolve: true });
-      await GoogleSignin.configure({
+      console.info('App Config', Config);
+      let gsConfig = {
         // scopes: ['https://www.googleapis.com/auth/calendar'],
         webClientId: Config.WEB_CLIENT_ID,
         offlineAccess: false
-      });
+      };
+      await GoogleSignin.hasPlayServices({ autoResolve: true });
+      await GoogleSignin.configure(gsConfig);
 
       const user = await GoogleSignin.currentUserAsync();
       if (user) {

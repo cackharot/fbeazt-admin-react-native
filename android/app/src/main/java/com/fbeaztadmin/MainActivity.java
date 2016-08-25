@@ -9,7 +9,6 @@ import java.util.List;
 
 import android.content.Intent;
 
-// import io.neson.react.notification.NotificationPackage;
 
 public class MainActivity extends ReactActivity {
 
@@ -21,15 +20,10 @@ public class MainActivity extends ReactActivity {
     protected String getMainComponentName() {
         return "fbeaztAdmin";
     }
+
     @Override
     public void onNewIntent (Intent intent) {
       super.onNewIntent(intent);
         setIntent(intent);
     }
-
-    // protected List<ReactPackage> getPackages() {
-    //     return Arrays.<ReactPackage>asList(
-    //         new NotificationPackage(this)                  // <- Add this line
-    //     );
-    // }
 }

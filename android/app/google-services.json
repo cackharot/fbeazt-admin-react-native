@@ -21,6 +21,14 @@
           }
         },
         {
+          "client_id": "280436316587-e43eal31crn5n00gfr35f935iqdog2pm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fbeaztadmin",
+            "certificate_hash": "7FAA52BBE152663A59C1EF08421BDA2A94331D34"
+          }
+        },
+        {
           "client_id": "280436316587-pc2v79112kdqu0jiruu56m92s8nr4s42.apps.googleusercontent.com",
           "client_type": 3
         }

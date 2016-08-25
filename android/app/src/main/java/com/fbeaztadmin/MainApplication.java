@@ -14,7 +14,6 @@ import java.util.List;
 
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 // import com.evollu.react.fcm.FIRMessagingPackage;
-// import io.neson.react.notification.NotificationPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
@@ -32,7 +31,6 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
           // new FIRMessagingPackage(),
-          // new NotificationPackage(),
           new RNGoogleSigninPackage(),
           new ReactNativeConfigPackage(),
           new ReactNativePushNotificationPackage(),
