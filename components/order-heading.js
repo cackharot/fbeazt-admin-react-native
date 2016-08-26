@@ -20,7 +20,9 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { List } from './List';
-import { OrderActions, OrderHelper } from './order-actions';
+import { OrderActions } from './order-actions';
+
+import { OrderHelper, Orderstatus } from '../utils/OrderHelper';
 
 export class OrderHeading extends Component {
   static propTypes = {
@@ -33,29 +35,21 @@ export class OrderHeading extends Component {
   }
 
   componentDidMount() {
-    Icon.getImageSource('stars', 20, 'red')
-      .then((source) => {
-        this.setState({ cardIcon: source });
-      })
-      .catch(e => {
-        console.log(e);
-      });
+
   }
 
   render() {
     let {order} = this.props;
-    let {cardIcon} = this.state;
-    if (!order || !cardIcon) {
+    if (!order) {
       return false;
     }
     let orderDateStr = OrderHelper.formatDate(new Date(order.created_at.$date));
-    let {statusIcon, statusColor} = OrderHelper.getStatusIcon(order.status.toUpperCase());
+    let {statusIcon,statusColor} = OrderHelper.getStatusIcon(order.status.toUpperCase());
     let totalItemQty = order.items.reduce((i, x) => i + x.quantity, 0);
-    let defaultStatusColor = '#6c71c4';
     return (
       <Card>
-        <Card.Media image={<Image source={cardIcon} />}  overlay>
-          <Avatar icon={statusIcon} />
+        <Card.Media image={<Image source={require('../assets/images/bg2.jpg')} />}  overlay>
+          <Avatar icon={statusIcon}  backgroundColor={statusColor}/>
           <Text style={[TYPO.paperFontHeadline, COLOR.paperGrey50]}>
             {order.order_no}
           </Text>

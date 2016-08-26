@@ -24,7 +24,7 @@ export class List extends Component {
         onPress: PropTypes.func,
         onLeftIconClick: PropTypes.func,
         onRightIconClick: PropTypes.func,
-        captionStyle: PropTypes.object || PropTypes.array,
+        captionStyle: PropTypes.array || PropTypes.object,
         style: PropTypes.object || PropTypes.array,
     };
 
@@ -63,7 +63,7 @@ export class List extends Component {
                 }
                 {leftAvatar &&
                     <Ripple onPress={onLeftIconClicked}>
-                        <View style={[styles.leftAvatar, lines > 2 && { paddingTop: 16, alignSelf: 'flex-start' }]}>
+                        <View style={[styles.leftAvatar, lines > 2 && { paddingTop: 0, alignSelf: 'flex-start' }]}>
                             {leftAvatar}
                         </View>
                     </Ripple>
@@ -114,7 +114,7 @@ export class List extends Component {
                 <View style={{ flexDirection: 'column' }}>
                     {lines > 2 && !!rightIcon && !!captionText &&
                         <View style={styles.captionTextContainer2}>
-                            <Text style={styles.captionText}>{captionText}</Text>
+                            <Text style={[styles.captionText, captionStyle]}>{captionText}</Text>
                         </View>}
 
                     {rightIcon &&

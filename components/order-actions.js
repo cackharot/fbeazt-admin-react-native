@@ -25,6 +25,8 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { List } from './List';
 
+import { OrderHelper, Orderstatus } from '../utils/OrderHelper';
+
 import {OrderService} from '../services/orderservice';
 
 export class OrderActions extends Component {
@@ -181,45 +183,6 @@ export class OrderActions extends Component {
       }
     }
     return s;
-  }
-}
-
-export class Orderstatus {
-  static PENDING = 'PENDING';
-  static PREPARING = 'PREPARING';
-  static PROGRESS = 'PROGRESS';
-  static DELIVERED = 'DELIVERED';
-  static CANCELLED = 'CANCELLED';
-}
-
-export class OrderHelper {
-  static getStatusIcon(status) {
-    let st = status.toLowerCase();
-    switch (status) {
-      case Orderstatus.PENDING:
-        return { statusIcon: 'shopping-cart' };
-      case Orderstatus.PREPARING:
-        return { statusIcon: 'schedule' };
-      case Orderstatus.PROGRESS:
-        return { statusIcon: 'motorcycle' };
-      case Orderstatus.DELIVERED:
-        return { statusIcon: 'check-circle' };
-      case Orderstatus.CANCELLED:
-        return { statusIcon: 'highlight-off' };
-      default:
-        return { statusIcon: 'stars' };
-    }
-  }
-
-  static formatDate(date) {
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var ampm = hours >= 12 ? 'pm' : 'am';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    var strTime = hours + ':' + minutes + ' ' + ampm;
-    return date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear() + "  " + strTime;
   }
 }
 

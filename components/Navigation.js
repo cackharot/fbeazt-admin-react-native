@@ -59,7 +59,7 @@ export class Navigation extends Component {
 
     return (
         <Drawer theme='light'>
-            <Drawer.Header image={<Image source={require('../assets/images/nav.jpg')} />}>
+            <Drawer.Header image={<Image source={require('../assets/images/bg3.jpg')} />}>
                 <View style={styles.header}>
                     <Avatar size={80} image={<Image source={{ uri: user.photo  }}/>} />
                     <Text style={[styles.text, COLOR.paperGrey50, TYPO.paperFontSubhead]}>

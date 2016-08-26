@@ -8,12 +8,13 @@ import {
   ScrollView,
   TouchableOpacity,
   TouchableHighlight,
+  TouchableNativeFeedback,
   ActivityIndicator,
   InteractionManager
 } from 'react-native';
 
 import {
-    Avatar
+  Avatar
   , Checkbox
   , Subheader
   , Divider
@@ -22,20 +23,19 @@ import {
   , Toolbar
   , Button
   , Card
+  , TYPO
   , COLOR
 } from 'react-native-material-design';
 
+import * as _ from 'lodash';
+
 import { List } from './List';
-
 import Icon from 'react-native-vector-icons/Ionicons';
-
 import { styles } from '../app.styles';
 
 import {OrderService} from '../services/orderservice';
-
 import {OrderDetailsView} from './order-details';
-
-import * as _ from 'lodash';
+import { OrderHelper, Orderstatus } from '../utils/OrderHelper';
 
 export default class OrderList extends Component {
   static contextTypes = {
@@ -67,7 +67,7 @@ export default class OrderList extends Component {
     this.service.getOrders().then(x => {
       // console.log('received items', x.items.length);
       // console.log(x);
-      if(!x || !x.items){
+      if (!x || !x.items) {
         return;
       }
       var data = this.ds.cloneWithRows(x.items);
@@ -84,13 +84,13 @@ export default class OrderList extends Component {
         filter_text: x.filter_text
       })
     })
-    .catch(e => {
-      this.setState({
-        isLoading: false,
-        errorMsg: e
-      })
-      console.error(e);
-    });
+      .catch(e => {
+        this.setState({
+          isLoading: false,
+          errorMsg: e
+        })
+        console.error(e);
+      });
   }
 
   rowPressed(order_id) {
@@ -100,21 +100,9 @@ export default class OrderList extends Component {
     navigator.forward('orderdetails', name, { order_id: selectedOrder._id.$oid });
   }
 
-  formatDate(date) {
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var ampm = hours >= 12 ? 'pm' : 'am';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? '0'+minutes : minutes;
-    var strTime = hours + ':' + minutes + ' ' + ampm;
-    return date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear() + "  " + strTime;
-  }
-
   renderRow(order, sectionID, rowID) {
     var totalItemQty = order.items.reduce((i, x) => i + x.quantity, 0);
-    let orderDate = new Date(order.created_at.$date)
-    let dateStr = this.formatDate(orderDate);
+    let dateStr = OrderHelper.formatDate(new Date(order.created_at.$date));
     var moreMsg = [
       {
         text: (<Text>{order.delivery_details.name}  <Icon name="md-call" />{order.delivery_details.phone}</Text>),
@@ -127,39 +115,28 @@ export default class OrderList extends Component {
         text: (<Text>Items: {order.items.length}/{totalItemQty}, On: {dateStr}</Text>)
       }
     ]
-    let statusIcon = this.getStatusIcon(order.status.toUpperCase());
+    let {statusIcon, statusColor} = OrderHelper.getStatusIcon(order.status.toUpperCase());
     return (
-      <TouchableOpacity key={rowID} onPress={() => this.rowPressed(order._id)}>
-        <List
-          primaryText={order.order_no}
-          secondaryTextMoreLine={moreMsg}
-          captionText={'Rs.' + order.total}
-          primaryColor={'#002b36'}
-          rightIcon={<Icon name="md-arrow-dropright-circle" style={{color:'#2aa198',fontSize:32}}/>}
-          lines={4}
-          leftAvatar={<Avatar icon={statusIcon} />}
-        />
-        <Divider inset={true} style={{ marginTop: 0 }} />
-      </TouchableOpacity>
+      <TouchableNativeFeedback key={rowID}
+        onPress={() => this.rowPressed(order._id) }
+        background={TouchableNativeFeedback.Ripple(COLOR.paperPink100.color, false) }>
+        <View style={{ height: 112 }}>
+          <List
+            primaryText={order.order_no}
+            secondaryTextMoreLine={moreMsg}
+            captionText={'Rs.' + order.total}
+            primaryColor={'#002b36'}
+            lines={4}
+            leftAvatar={<Avatar icon={statusIcon} backgroundColor={statusColor}/>}
+            captionStyle={[TYPO.paperFontSubhead, COLOR.paperBlueGrey700]}
+            />
+          <Divider inset={true} style={{ marginTop: 0 }} />
+        </View>
+      </TouchableNativeFeedback>
     );
   }
 
-  getStatusIcon(status){
-    switch(status){
-      case 'PENDING':
-        return 'shopping-cart';
-      case 'PREPARING':
-        return 'schedule';
-      case 'PROGRESS':
-        return 'motorcycle';
-      case 'DELIVERED':
-        return 'check-circle';
-      case 'CANCELLED':
-        return 'highlight-off';
-      default:
-        return 'stars';
-    }
-  }
+  // rightIcon={<Icon name="md-arrow-dropright-circle" style={{ color: COLOR.paperTeal500.color, fontSize: 32 }}/>}
 
   render() {
     var spinner = this.state.isLoading ?
@@ -170,16 +147,14 @@ export default class OrderList extends Component {
         />) : (<View/>);
 
     return (
-      <View style={{flex:1}}>
-        <ScrollView>
-          {spinner}
-          <ListView
-            enableEmptySections={true}
-            dataSource={this.state.orders}
-            renderRow={this.renderRow.bind(this)}
-            />
-        </ScrollView>
-      </View>
+      <ScrollView style={{ flex: 1 }}>
+        {spinner}
+        <ListView
+          enableEmptySections={true}
+          dataSource={this.state.orders}
+          renderRow={this.renderRow.bind(this) }
+          />
+      </ScrollView>
     )
   }
 }
