@@ -86,19 +86,19 @@ export class OrderHeading extends Component {
         <Card.Actions position="left">
           <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'stretch' }}>
             <TouchableOpacity>
-              <Icon name="md-cart" size={40} style={[{ backgroundColor: "#fdf6e3", padding: 15, paddingLeft: 40, paddingRight: 40 }, { color: statusColor }]}/>
+              <Icon name="md-cart" size={40} style={[{ backgroundColor: "#fdf6e3", padding: 5, paddingLeft: 10, paddingRight: 10 }, { color: statusColor }]}/>
             </TouchableOpacity>
             <TouchableOpacity>
-              <Icon name="md-cafe" size={40}  style={{ backgroundColor: "#fdf6e3", color: '#6c71c4', padding: 15, paddingLeft: 40, paddingRight: 40 }}/>
+              <Icon name="md-cafe" size={40}  style={{ backgroundColor: "#fdf6e3", color: '#6c71c4', padding: 5, paddingLeft: 10, paddingRight: 10 }}/>
             </TouchableOpacity>
             <TouchableOpacity>
-              <Icon name="md-bicycle" size={40}  style={{ backgroundColor: "#fdf6e3", color: '#6c71c4', padding: 15, paddingLeft: 40, paddingRight: 40 }}/>
+              <Icon name="md-bicycle" size={40}  style={{ backgroundColor: "#fdf6e3", color: '#6c71c4', padding: 5, paddingLeft: 10, paddingRight: 10 }}/>
             </TouchableOpacity>
             <TouchableOpacity>
-              <Icon name="md-checkmark-circle-outline" size={40}  style={{ backgroundColor: "#fdf6e3", color: '#6c71c4', padding: 15, paddingLeft: 40, paddingRight: 40 }}/>
+              <Icon name="md-checkmark-circle-outline" size={40}  style={{ backgroundColor: "#fdf6e3", color: '#6c71c4', padding: 5, paddingLeft: 10, paddingRight: 10 }}/>
             </TouchableOpacity>
             <TouchableOpacity>
-              <Icon name="md-close-circle" size={40}  style={{ backgroundColor: "#fdf6e3", color: '#6c71c4', padding: 15, paddingLeft: 40 }}/>
+              <Icon name="md-close-circle" size={40}  style={{ backgroundColor: "#fdf6e3", color: '#6c71c4', padding: 5, paddingLeft: 10 }}/>
             </TouchableOpacity>
           </View>
         </Card.Actions>

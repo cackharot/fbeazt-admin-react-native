@@ -129,7 +129,7 @@ export default class OrderList extends Component {
     ]
     let statusIcon = this.getStatusIcon(order.status.toUpperCase());
     return (
-      <TouchableOpacity key={rowID} onLongPress={() => this.rowPressed(order._id)}>
+      <TouchableOpacity key={rowID} onPress={() => this.rowPressed(order._id)}>
         <List
           primaryText={order.order_no}
           secondaryTextMoreLine={moreMsg}

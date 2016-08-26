@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+  StyleSheet,
   View,
   Text,
   Image,
@@ -28,38 +29,31 @@ export class OrderPayment extends Component {
     if (!order) {
       return false;
     }
-    if(!order.payment_type){
+    if (!order.payment_type) {
       order.payment_type = 'cod';
       order.payment_status = 'paid';
     }
     return (
-      <Card>
-        <Card.Body>
-          <List
-            primaryText={'Sub Total'}
-            captionText={'Rs.' + (order.total - order.delivery_charges)}
-            />
-          <List
-            primaryText={'Delivery charges'}
-            captionText={'Rs.' + order.delivery_charges}
-            />
-          <List
-            primaryText={'Total'}
-            captionText={'Rs.' + order.total}
-            />
-          <Divider />
-          <Subheader text="Payment"/>
-          <List
-            primaryText={'Mode'}
-            captionText={order.payment_type.toUpperCase()}
-            />
-          <List
-            primaryText={'Status'}
-            captionText={order.payment_status.toUpperCase()}
-            />
-          <Divider />
-        </Card.Body>
-      </Card>
+      <View>
+        <Subheader text="Payment"/>
+        <List
+          primaryText={'Mode'}
+          captionText={order.payment_type.toUpperCase() }
+          style={pstyles.compact}
+          />
+        <List
+          primaryText={'Status'}
+          captionText={order.payment_status.toUpperCase() }
+          style={pstyles.compact}
+          />
+        <Divider />
+      </View>
     );
   }
 }
+
+const pstyles = StyleSheet.create({
+  compact: {
+    height: 30
+  }
+});

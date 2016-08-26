@@ -84,16 +84,12 @@ export default class OrderDetailsView extends Component {
       return (<View/>);
     }
     return (
-      <View underlayColor='#dddddd'>
-        <ScrollView>
-          {spinner}
-          <View>
-            <OrderHeading order={order} />
-            <OrderItemList items={order.items} />
-            <OrderPayment order={order} />
-          </View>
-        </ScrollView>
-      </View>
+      <ScrollView underlayColor='#dddddd'>
+        {spinner}
+        <OrderHeading order={order} />
+        <OrderItemList order={order} />
+        <OrderPayment order={order} />
+      </ScrollView>
     );
   }
 }

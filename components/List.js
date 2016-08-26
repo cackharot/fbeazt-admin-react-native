@@ -23,7 +23,9 @@ export class List extends Component {
         primaryColor: PropTypes.string,
         onPress: PropTypes.func,
         onLeftIconClick: PropTypes.func,
-        onRightIconClick: PropTypes.func
+        onRightIconClick: PropTypes.func,
+        captionStyle: PropTypes.object,
+        style: PropTypes.object || PropTypes.array,
     };
 
     static defaultProps = {
@@ -45,11 +47,13 @@ export class List extends Component {
             onLeftIconClicked,
             onRightIconClicked,
             secondaryTextMoreLine,
-            captionText
+            captionText,
+            style,
+            captionStyle
         } = this.props;
 
         return (
-                <View style={[styles.listContainer, { marginTop: 1, height: lines > 2 ? ((lines -1) * 18 + 56) : (secondaryText ? 72 : (leftAvatar || rightAvatar ) ? 56 : 48) }]}>
+                <View style={[styles.listContainer, { marginTop: 1, height: lines > 2 ? ((lines -1) * 18 + 56) : (secondaryText ? 72 : (leftAvatar || rightAvatar ) ? 56 : 48) }, style]}>
                     {leftIcon &&
                         <TouchableWithoutFeedback onPress={onLeftIconClicked}>
                             <View style={[styles.leftIcon, lines > 2 && { paddingTop: 16, alignSelf: 'flex-start' }]}>
@@ -73,7 +77,7 @@ export class List extends Component {
                             </View>
                             {(lines > 2 && !!rightIcon) ||
                                 <View style={styles.captionTextContainer}>
-                                    <Text style={styles.captionText}>
+                                    <Text style={[styles.captionText,captionStyle]}>
                                         {captionText}
                                     </Text>
                                 </View>
