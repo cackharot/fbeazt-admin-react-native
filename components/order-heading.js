@@ -20,6 +20,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { List } from './List';
+import { OrderActions, OrderHelper } from './order-actions';
 
 export class OrderHeading extends Component {
   static propTypes = {
@@ -47,7 +48,8 @@ export class OrderHeading extends Component {
     if (!order || !cardIcon) {
       return false;
     }
-    let {statusIcon, statusColor} = this.getStatusIcon(order.status.toUpperCase());
+    let orderDateStr = OrderHelper.formatDate(new Date(order.created_at.$date));
+    let {statusIcon, statusColor} = OrderHelper.getStatusIcon(order.status.toUpperCase());
     let totalItemQty = order.items.reduce((i, x) => i + x.quantity, 0);
     let defaultStatusColor = '#6c71c4';
     return (
@@ -58,7 +60,7 @@ export class OrderHeading extends Component {
             {order.order_no}
           </Text>
           <Text style={[TYPO.paperSubhead, COLOR.paperGrey50]}>
-            <Icon name="md-calendar" /> {this.formatDate(new Date(order.created_at.$date)) }
+            <Icon name="md-calendar" /> {orderDateStr}
           </Text>
         </Card.Media>
         <Card.Body>
@@ -84,54 +86,12 @@ export class OrderHeading extends Component {
           </Text>
         </Card.Body>
         <Card.Actions position="left">
-          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'stretch' }}>
-            <TouchableOpacity>
-              <Icon name="md-cart" size={40} style={[{ backgroundColor: "#fdf6e3", padding: 5, paddingLeft: 10, paddingRight: 10 }, { color: statusColor }]}/>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Icon name="md-cafe" size={40}  style={{ backgroundColor: "#fdf6e3", color: '#6c71c4', padding: 5, paddingLeft: 10, paddingRight: 10 }}/>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Icon name="md-bicycle" size={40}  style={{ backgroundColor: "#fdf6e3", color: '#6c71c4', padding: 5, paddingLeft: 10, paddingRight: 10 }}/>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Icon name="md-checkmark-circle-outline" size={40}  style={{ backgroundColor: "#fdf6e3", color: '#6c71c4', padding: 5, paddingLeft: 10, paddingRight: 10 }}/>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Icon name="md-close-circle" size={40}  style={{ backgroundColor: "#fdf6e3", color: '#6c71c4', padding: 5, paddingLeft: 10 }}/>
-            </TouchableOpacity>
-          </View>
+          <OrderActions order={order} onOrderStatusChanged={(st) => {
+            this.props.order.status = st;
+            this.forceUpdate();
+          } }/>
         </Card.Actions>
       </Card>
     );
-  }
-  // <Button primary={'paperPink'} text="GO TO GITHUB" onPress={() => false} />
-
-  getStatusIcon(status) {
-    switch (status) {
-      case 'PENDING':
-        return { statusIcon: 'shopping-cart', statusColor: '#859900' };
-      case 'PREPARING':
-        return { statusIcon: 'schedule', statusColor: '#6c71c4' };
-      case 'PROGRESS':
-        return { statusIcon: 'motorcycle', statusColor: '#6c71c4' };
-      case 'DELIVERED':
-        return { statusIcon: 'check-circle', statusColor: '#6c71c4' };
-      case 'CANCELLED':
-        return { statusIcon: 'highlight-off', statusColor: '#6c71c4' };
-      default:
-        return { statusIcon: 'stars', statusColor: '#6c71c4' };
-    }
-  }
-
-  formatDate(date) {
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var ampm = hours >= 12 ? 'pm' : 'am';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    var strTime = hours + ':' + minutes + ' ' + ampm;
-    return date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear() + "  " + strTime;
   }
 }

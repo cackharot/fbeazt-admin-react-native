@@ -33,4 +33,16 @@ export class OrderService {
       })
       .then((response) => response.json());
   }
+
+  updateStatus(order_id, toStatus) {
+    return fetch(Config.BASE_URL + '/api/order_status/' + order_id,
+      {
+        method: 'POST',
+        headers: this.headers,
+        body: JSON.stringify({
+          status: toStatus
+        })
+      })
+      .then(response => response.json());
+  }
 }
