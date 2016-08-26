@@ -14,6 +14,7 @@ import {
   AsyncStorage,
   NetInfo,
   InteractionManager,
+  StatusBar,
   ToastAndroid
 } from 'react-native';
 
@@ -44,9 +45,9 @@ var PushNotification = require('react-native-push-notification');
 
 class FbeaztAdmin extends Component {
   static childContextTypes = {
-		drawer: React.PropTypes.object,
-		navigator: React.PropTypes.object
-	};
+    drawer: React.PropTypes.object,
+    navigator: React.PropTypes.object
+  };
 
   constructor(props) {
     super(props);
@@ -59,23 +60,23 @@ class FbeaztAdmin extends Component {
   }
 
   getChildContext = () => {
-		return {
-			drawer: this.state.drawer,
-			navigator: this.state.navigator
-		}
-	};
+    return {
+      drawer: this.state.drawer,
+      navigator: this.state.navigator
+    }
+  };
 
   setDrawer = (drawer) => {
-		this.setState({
-			drawer
-		});
-	};
+    this.setState({
+      drawer
+    });
+  };
 
-	setNavigator = (navigator) => {
-		this.setState({
-			navigator: new Navigate(navigator)
-		});
-	};
+  setNavigator = (navigator) => {
+    this.setState({
+      navigator: new Navigate(navigator)
+    });
+  };
 
   componentDidMount() {
     this._checkInternetConnectivity();
@@ -110,43 +111,43 @@ class FbeaztAdmin extends Component {
     );
   }
 
-  _loginSuccess(user){
+  _loginSuccess(user) {
     this.setState({
       user: user
     })
     ToastAndroid.show('Sigin success!', ToastAndroid.SHORT);
     let that = this;
-    AsyncStorage.getItem(DEVICE_TOKEN_KEY).then((token)=>{
+    AsyncStorage.getItem(DEVICE_TOKEN_KEY).then((token) => {
       console.info('Device token: ' + token)
-      if(!token){
+      if (!token) {
         that._configurePushNotification(user);
       }
     })
-    .catch((e)=>{
-      console.error(e);
-    })
-    .done();
+      .catch((e) => {
+        console.error(e);
+      })
+      .done();
   }
 
-  _loginFailure(errorMessage){
+  _loginFailure(errorMessage) {
     this.setState({
       user: null
     })
-    if(errorMessage!=='Not logged in!'){
+    if (errorMessage !== 'Not logged in!') {
       ToastAndroid.show('Sigin Error!\n' + errorMessage, ToastAndroid.SHORT);
     }
   }
 
   render() {
-    if(!this.state.isOnline){
+    if (!this.state.isOnline) {
       return this.getOfflineView();
     }
     if (!this.state.user) {
       return (
         <LoginView title="Foodbeazt Admin"
-          onSuccess={this._loginSuccess.bind(this)}
-          onFailure={this._loginFailure.bind(this)}
-        />
+          onSuccess={this._loginSuccess.bind(this) }
+          onFailure={this._loginFailure.bind(this) }
+          />
       );
     }
     if (this.state.user) {
@@ -155,33 +156,37 @@ class FbeaztAdmin extends Component {
       return (
         <DrawerLayoutAndroid
           drawerWidth={300}
-          ref={(drawer) => { !this.state.drawer ? this.setDrawer(drawer) : null }}
+          ref={(drawer) => { !this.state.drawer ? this.setDrawer(drawer) : null } }
           drawerPosition={DrawerLayoutAndroid.positions.Left}
           renderNavigationView={() => {
             if (drawer && navigator) {
-                return navView;
+              return navView;
             }
             return null;
-          }}>
+          } }>
+          <StatusBar
+            backgroundColor={COLOR.paperPink400.color}
+            barStyle="light-content"
+            />
           {drawer &&
             <Navigator
-              initialRoute={Navigate.getInitialRoute()}
+              initialRoute={Navigate.getInitialRoute() }
               navigationBar={<Toolbar onIconPress={drawer.openDrawer} />}
               configureScene={() => {
-                              return Navigator.SceneConfigs.FadeAndroid;
-                            }}
-              ref={(navigator) => { !this.state.navigator ? this.setNavigator(navigator) : null }}
+                return Navigator.SceneConfigs.FadeAndroid;
+              } }
+              ref={(navigator) => { !this.state.navigator ? this.setNavigator(navigator) : null } }
               renderScene={(route) => {
-                        if (this.state.navigator && route.component) {
-                            return (
-                                <View
-                                    style={styles.scene}
-                                    showsVerticalScrollIndicator={false}>
-                                  <route.component title={route.title} path={route.path} {...route.props} />
-                                </View>
-                            );
-                        }
-                    }}
+                if (this.state.navigator && route.component) {
+                  return (
+                    <View
+                      style={styles.scene}
+                      showsVerticalScrollIndicator={false}>
+                      <route.component title={route.title} path={route.path} {...route.props} />
+                    </View>
+                  );
+                }
+              } }
               />
           }
         </DrawerLayoutAndroid>
@@ -189,7 +194,7 @@ class FbeaztAdmin extends Component {
     }
   }
 
-  _configurePushNotification(){
+  _configurePushNotification() {
     let that = this;
     PushNotification.configure({
       // (optional) Called when Token is generated (iOS and Android)
@@ -198,7 +203,7 @@ class FbeaztAdmin extends Component {
         InteractionManager.runAfterInteractions(() => {
           let service = new PushNotificationService();
           service.register(token)
-            .catch((e)=>{
+            .catch((e) => {
               console.error(e);
             });;
           AsyncStorage.setItem(DEVICE_TOKEN_KEY, token['token']);
@@ -207,10 +212,10 @@ class FbeaztAdmin extends Component {
       // (required) Called when a remote or local notification is opened or received
       onNotification: function (notification) {
         console.log('NOTIFICATION:', notification);
-        if(notification.foreground === true && notification.userInteraction === false && notification['google.message_id']){
+        if (notification.foreground === true && notification.userInteraction === false && notification['google.message_id']) {
           that._showLocalNotification(notification);
         }
-        if(notification.userInteraction === true){
+        if (notification.userInteraction === true) {
           that._tryNavigateOnNotification(notification);
         }
       },
@@ -228,7 +233,7 @@ class FbeaztAdmin extends Component {
   }
 
   _tryNavigateOnNotification(notification) {
-    if(notification.order_id){
+    if (notification.order_id) {
       _.navigator.push({
         id: 'orderdetails',
         title: '#' + notification.order_no + ' Details',
@@ -260,22 +265,22 @@ class FbeaztAdmin extends Component {
     GoogleSignin.revokeAccess().then(() => GoogleSignin.signOut())
       .then(() => {
         this.setState({ user: null });
-        AsyncStorage.getItem(DEVICE_TOKEN_KEY).then((token)=>{
-          if(token){
+        AsyncStorage.getItem(DEVICE_TOKEN_KEY).then((token) => {
+          if (token) {
             InteractionManager.runAfterInteractions(() => {
               let service = new PushNotificationService();
               service.unregister(token)
-                .catch((e)=>{
+                .catch((e) => {
                   console.error(e);
                 });
             });
           }
           AsyncStorage.removeItem(DEVICE_TOKEN_KEY);
         })
-        .catch((e)=>{
-          console.error(e);
-        })
-        .done();
+          .catch((e) => {
+            console.error(e);
+          })
+          .done();
       }).done();
   }
 }

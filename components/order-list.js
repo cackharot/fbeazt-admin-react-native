@@ -10,7 +10,7 @@ import {
   TouchableHighlight,
   TouchableNativeFeedback,
   ActivityIndicator,
-  InteractionManager
+  InteractionManager,
 } from 'react-native';
 
 import {
@@ -64,26 +64,28 @@ export default class OrderList extends Component {
   }
 
   loadOrders() {
-    this.service.getOrders().then(x => {
-      // console.log('received items', x.items.length);
-      // console.log(x);
-      if (!x || !x.items) {
-        return;
-      }
-      var data = this.ds.cloneWithRows(x.items);
-      this.setState({
-        isLoading: false,
-        _orders: x.items,
-        orders: data,
-        total: x.total,
-        page_size: x.page_size,
-        page_no: x.page_no,
-        next: x.next,
-        previous: x.previous,
-        order_status: x.order_status,
-        filter_text: x.filter_text
+    let s = new Date();
+    this.service.getOrders()
+      .then(x => {
+        // console.log('received items', x.items.length);
+        // console.log(x);
+        if (!x || !x.items) {
+          return;
+        }
+        var data = this.ds.cloneWithRows(x.items);
+        this.setState({
+          isLoading: false,
+          _orders: x.items,
+          orders: data,
+          total: x.total,
+          page_size: x.page_size,
+          page_no: x.page_no,
+          next: x.next,
+          previous: x.previous,
+          order_status: x.order_status,
+          filter_text: x.filter_text
+        })
       })
-    })
       .catch(e => {
         this.setState({
           isLoading: false,
@@ -139,21 +141,23 @@ export default class OrderList extends Component {
   // rightIcon={<Icon name="md-arrow-dropright-circle" style={{ color: COLOR.paperTeal500.color, fontSize: 32 }}/>}
 
   render() {
-    var spinner = this.state.isLoading ?
+    let spinner = this.state.isLoading ?
       (<ActivityIndicator
         animating={this.state.isLoading}
         style={[styles.centering, { height: 80 }]}
         size="large"
         />) : (<View/>);
-
+    let {orders} = this.state;
     return (
       <ScrollView style={{ flex: 1 }}>
         {spinner}
-        <ListView
-          enableEmptySections={true}
-          dataSource={this.state.orders}
-          renderRow={this.renderRow.bind(this) }
-          />
+        {orders &&
+          <ListView
+            enableEmptySections={true}
+            dataSource={orders}
+            renderRow={this.renderRow.bind(this) }
+            />
+        }
       </ScrollView>
     )
   }

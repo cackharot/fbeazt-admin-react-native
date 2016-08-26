@@ -80,15 +80,18 @@ export default class OrderDetailsView extends Component {
         size="large"
         />) : (<View/>);
     let order = this.state.order;
-    if (!order) {
-      return (<View/>);
-    }
     return (
-      <ScrollView underlayColor='#dddddd'>
+      <ScrollView style={{ flex: 1 }}>
         {spinner}
-        <OrderHeading order={order} />
-        <OrderItemList order={order} />
-        <OrderPayment order={order} />
+        {order &&
+          <OrderHeading order={order} />
+        }
+        {order &&
+          <OrderItemList order={order} />
+        }
+        {order &&
+          <OrderPayment order={order} />
+        }
       </ScrollView>
     );
   }

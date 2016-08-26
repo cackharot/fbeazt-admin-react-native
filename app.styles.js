@@ -108,5 +108,9 @@ export const styles = StyleSheet.create({
   },
   orderStatusIcon: {
     marginRight: 10
+  },
+  viewPager: {
+    alignItems: 'center',
+    padding: 20,
   }
 });

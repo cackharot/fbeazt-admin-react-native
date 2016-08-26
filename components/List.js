@@ -24,8 +24,8 @@ export class List extends Component {
         onPress: PropTypes.func,
         onLeftIconClick: PropTypes.func,
         onRightIconClick: PropTypes.func,
-        captionStyle: PropTypes.array || PropTypes.object,
-        style: PropTypes.object || PropTypes.array,
+        captionStyle: PropTypes.oneOfType([PropTypes.array, PropTypes.array]),
+        style: PropTypes.oneOfType([PropTypes.array, PropTypes.array]),
     };
 
     static defaultProps = {

@@ -19,7 +19,7 @@ export class OrderService {
   }
 
   getOrders() {
-    return fetch(Config.BASE_URL + '/api/orders?page_size=10&page_no=1',
+    return fetch(Config.BASE_URL + '/api/orders/?page_size=10&page_no=3',
       {
         headers: this.headers
       })
