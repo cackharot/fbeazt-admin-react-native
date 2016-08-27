@@ -18,8 +18,13 @@ export class OrderService {
     }
   }
 
-  getOrders() {
-    return fetch(Config.BASE_URL + '/api/orders/?page_size=10&page_no=3',
+  getOrders(nextUrl, searchModel) {
+    var url = '/api/orders/?' + this.toQueryString(searchModel);
+    if (nextUrl && nextUrl.length > 0) {
+      url = nextUrl;
+    }
+    console.log('fetching', url);
+    return fetch(Config.BASE_URL + url,
       {
         headers: this.headers
       })
@@ -44,5 +49,19 @@ export class OrderService {
         })
       })
       .then(response => response.json());
+  }
+
+  toQueryString(obj) {
+    return obj ? Object.keys(obj).sort().map(function (key) {
+      var val = obj[key];
+
+      if (Array.isArray(val)) {
+        return val.sort().map(function (val2) {
+          return encodeURIComponent(key) + '=' + encodeURIComponent(val2);
+        }).join('&');
+      }
+
+      return encodeURIComponent(key) + '=' + encodeURIComponent(val);
+    }).join('&') : '';
   }
 }

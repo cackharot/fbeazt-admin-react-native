@@ -53,7 +53,6 @@ export class OrderItemList extends Component {
       return false;
     }
     let stores = this.getStores(order.items);
-    console.log(stores);
     return (
       <View>
         <Subheader text="Items"/>

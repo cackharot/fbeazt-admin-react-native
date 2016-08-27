@@ -75,7 +75,7 @@ export default class OrderDetailsView extends Component {
   render() {
     let spinner = this.state.isLoading ?
       (<ActivityIndicator
-        animating={this.state.isLoading}
+        color={COLOR.paperIndigo400.color}
         style={[styles.centering, { height: 80 }]}
         size="large"
         />) : (<View/>);

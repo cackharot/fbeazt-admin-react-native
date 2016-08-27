@@ -24,13 +24,15 @@ export class List extends Component {
         onPress: PropTypes.func,
         onLeftIconClick: PropTypes.func,
         onRightIconClick: PropTypes.func,
-        captionStyle: PropTypes.oneOfType([PropTypes.array, PropTypes.array]),
-        style: PropTypes.oneOfType([PropTypes.array, PropTypes.array]),
+        captionStyle: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+        style: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
     };
 
     static defaultProps = {
         lines: 1,
-        primaryColor: 'rgba(0,0,0,.87)'
+        primaryColor: 'rgba(0,0,0,.87)',
+        style: {},
+        captionStyle: {}
     };
 
     render() {

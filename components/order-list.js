@@ -29,6 +29,8 @@ import {
 
 import * as _ from 'lodash';
 
+import InfiniteScrollView from 'react-native-infinite-scroll-view';
+
 import { List } from './List';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { styles } from '../app.styles';
@@ -46,10 +48,17 @@ export default class OrderList extends Component {
   constructor(props) {
     super(props);
     this.ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1._id.$oid !== r2._id.$oid });
+    this._orders = [];
     this.state = {
       orders: this.ds.cloneWithRows([]),
-      _orders: [],
-      isLoading: false
+      isLoading: false,
+      canLoadMoreContent: true,
+      searchModel: {
+        page_no: 1,
+        page_size: 8,
+        filter_text: '',
+        order_status: ''
+      }
     };
     this.service = new OrderService();
   }
@@ -59,45 +68,62 @@ export default class OrderList extends Component {
       isLoading: true
     });
     InteractionManager.runAfterInteractions(() => {
-      this.loadOrders();
+      this.loadOrders(null, this.state.searchModel);
     });
   }
 
-  loadOrders() {
-    let s = new Date();
-    this.service.getOrders()
-      .then(x => {
-        // console.log('received items', x.items.length);
-        // console.log(x);
-        if (!x || !x.items) {
-          return;
-        }
-        var data = this.ds.cloneWithRows(x.items);
+  setOrdersState(x) {
+    let rows = this._orders.concat(x.items);
+    let data = this.ds.cloneWithRows(rows);
+    this._orders = rows;
+    this.prevUrl = null;
+    this.setState({
+      isLoading: false,
+      orders: data,
+      total: x.total,
+      searchModel: {
+        filter_text: x.filter_text,
+        order_status: x.order_status,
+        page_size: x.page_size,
+        page_no: x.page_no,
+      },
+      next: x.next,
+      previous: x.previous,
+      canLoadMoreContent: x.next && x.next.length > 0,
+    })
+  }
+
+  async loadOrders() {
+    if (this.prevUrl && this.prevUrl === this.state.next) {
+      console.log('Duplicate request. Ignoring');
+      return;
+    }
+    this.prevUrl = this.state.next;
+    try {
+      let x = await this.service.getOrders(this.state.next, this.state.searchModel);
+      // console.log('received items', x.items.length, x.total);
+      if (!x || !x.items) {
         this.setState({
-          isLoading: false,
-          _orders: x.items,
-          orders: data,
-          total: x.total,
-          page_size: x.page_size,
-          page_no: x.page_no,
-          next: x.next,
-          previous: x.previous,
-          order_status: x.order_status,
-          filter_text: x.filter_text
+          canLoadMoreContent: false,
+          next: null
         })
+        return;
+      }
+      this.setOrdersState(x);
+    } catch (e) {
+      console.error(e);
+      this.setState({
+        errorMsg: e,
+        canLoadMoreContent: false
       })
-      .catch(e => {
-        this.setState({
-          isLoading: false,
-          errorMsg: e
-        })
-        console.error(e);
-      });
+    } finally {
+      this.setState({ isLoading: false });
+    }
   }
 
   rowPressed(order_id) {
     const { navigator } = this.context;
-    let selectedOrder = this.state._orders.filter(x => x._id.$oid === order_id.$oid)[0];
+    let selectedOrder = this._orders.filter(x => x._id.$oid === order_id.$oid)[0];
     let name = '#' + selectedOrder.order_no + ' Details';
     navigator.forward('orderdetails', name, { order_id: selectedOrder._id.$oid });
   }
@@ -122,13 +148,14 @@ export default class OrderList extends Component {
       <TouchableNativeFeedback key={rowID}
         onPress={() => this.rowPressed(order._id) }
         background={TouchableNativeFeedback.Ripple(COLOR.paperPink100.color, false) }>
-        <View style={{ height: 112 }}>
+        <View>
           <List
             primaryText={order.order_no}
             secondaryTextMoreLine={moreMsg}
             captionText={'Rs.' + order.total}
             primaryColor={'#002b36'}
             lines={4}
+            style={{}}
             leftAvatar={<Avatar icon={statusIcon} backgroundColor={statusColor}/>}
             captionStyle={[TYPO.paperFontSubhead, COLOR.paperBlueGrey700]}
             />
@@ -143,22 +170,37 @@ export default class OrderList extends Component {
   render() {
     let spinner = this.state.isLoading ?
       (<ActivityIndicator
-        animating={this.state.isLoading}
+        color={COLOR.paperIndigo400.color}
         style={[styles.centering, { height: 80 }]}
         size="large"
         />) : (<View/>);
     let {orders} = this.state;
     return (
-      <ScrollView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         {spinner}
-        {orders &&
-          <ListView
-            enableEmptySections={true}
-            dataSource={orders}
-            renderRow={this.renderRow.bind(this) }
-            />
-        }
-      </ScrollView>
+        <ListView
+          renderScrollComponent={props => <InfiniteScrollView {...props} />}
+          dataSource={orders}
+          enableEmptySections={true}
+          renderRow={this.renderRow.bind(this) }
+          canLoadMore={this.state.canLoadMoreContent}
+          onLoadMoreAsync={this.loadOrders.bind(this) }
+          renderLoadingIndicator={() => (
+            <ActivityIndicator
+              color={COLOR.paperIndigo400.color}
+              style={[styles.centering, { height: 80 }]}
+              size="large"
+              />
+          ) }
+          renderLoadingErrorIndicator={() => (
+            <ActivityIndicator
+              color={COLOR.paperRed900.color}
+              style={[styles.centering, { height: 80 }]}
+              size="large"
+              />
+          ) }
+          />
+      </View>
     )
   }
 }
