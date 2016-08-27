@@ -115,18 +115,20 @@ class FbeaztAdmin extends Component {
     this.setState({
       user: user
     })
-    ToastAndroid.show('Sigin success!', ToastAndroid.SHORT);
     let that = this;
-    AsyncStorage.getItem(DEVICE_TOKEN_KEY).then((token) => {
-      console.info('Device token: ' + token)
-      if (!token) {
-        that._configurePushNotification(user);
-      }
-    })
+    AsyncStorage.getItem(DEVICE_TOKEN_KEY)
+      .then((token) => {
+        console.info('Device token: ' + token)
+        if (!token) {
+          that._configurePushNotification(user);
+        }
+      })
       .catch((e) => {
         console.error(e);
       })
-      .done();
+      .done(() => {
+        ToastAndroid.show('Sigin success!', ToastAndroid.SHORT);
+      });
   }
 
   _loginFailure(errorMessage) {
@@ -259,29 +261,6 @@ class FbeaztAdmin extends Component {
       playSound: true,
       number: 1
     });
-  }
-
-  _signOut() {
-    GoogleSignin.revokeAccess().then(() => GoogleSignin.signOut())
-      .then(() => {
-        this.setState({ user: null });
-        AsyncStorage.getItem(DEVICE_TOKEN_KEY).then((token) => {
-          if (token) {
-            InteractionManager.runAfterInteractions(() => {
-              let service = new PushNotificationService();
-              service.unregister(token)
-                .catch((e) => {
-                  console.error(e);
-                });
-            });
-          }
-          AsyncStorage.removeItem(DEVICE_TOKEN_KEY);
-        })
-          .catch((e) => {
-            console.error(e);
-          })
-          .done();
-      }).done();
   }
 }
 

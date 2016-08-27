@@ -32,8 +32,9 @@ export default {
     icon: 'stars'
   },
   signout: {
-    title: 'Log out',
+    title: 'Sign Out',
     menu: true,
-    icon: 'exit-to-app'
+    icon: 'exit-to-app',
+    component: require('./components/signout').default,
   }
 }
