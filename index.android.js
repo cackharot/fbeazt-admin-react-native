@@ -52,7 +52,6 @@ class FbeaztAdmin extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isOnline: false,
       user: null,
       drawer: null,
       navigator: null,
@@ -79,36 +78,6 @@ class FbeaztAdmin extends Component {
   };
 
   componentDidMount() {
-    this._checkInternetConnectivity();
-  }
-
-  _checkInternetConnectivity() {
-    NetInfo.isConnected.fetch().then(isConnected => {
-      console.log('First, Device is ' + (isConnected ? 'online' : 'offline'));
-      this.setState({
-        isOnline: isConnected
-      });
-    });
-    NetInfo.isConnected.addEventListener(
-      'change',
-      this._handleFirstConnectivityChange
-    );
-  }
-
-  _handleFirstConnectivityChange(isConnected) {
-    console.log('Then, Device is ' + (isConnected ? 'online' : 'offline'));
-    NetInfo.isConnected.removeEventListener(
-      'change',
-      this._handleFirstConnectivityChange
-    );
-  }
-
-  getOfflineView() {
-    return (
-      <View>
-        <Text>You need internet connectivity to access this app!</Text>
-      </View>
-    );
   }
 
   _loginSuccess(user) {
@@ -135,15 +104,12 @@ class FbeaztAdmin extends Component {
     this.setState({
       user: null
     })
-    if (errorMessage !== 'Not logged in!') {
+    if (errorMessage && errorMessage !== 'Not logged in!') {
       ToastAndroid.show('Sigin Error!\n' + errorMessage, ToastAndroid.SHORT);
     }
   }
 
   render() {
-    if (!this.state.isOnline) {
-      return this.getOfflineView();
-    }
     if (!this.state.user) {
       return (
         <LoginView title="Foodbeazt Admin"

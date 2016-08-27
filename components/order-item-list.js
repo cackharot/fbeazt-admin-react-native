@@ -65,6 +65,7 @@ export class OrderItemList extends Component {
                 {this.getItems(order.items, store._id.$oid).map((dish, i) => (
                   <TouchableOpacity key={i}>
                     <List
+                      style={{}}
                       primaryText={dish.name}
                       secondaryText={dish.store.name}
                       captionText={'Rs.' + (dish.price_detail ? dish.price_detail.price : dish.price).toFixed(2).toString() }
@@ -81,6 +82,7 @@ export class OrderItemList extends Component {
           order.items.map((dish, i) => (
             <TouchableOpacity key={i}>
               <List
+                style={{}}
                 primaryText={dish.name}
                 secondaryText={dish.store.name}
                 captionText={'Rs.' + (dish.price_detail ? dish.price_detail.price : dish.price).toFixed(2).toString() }
