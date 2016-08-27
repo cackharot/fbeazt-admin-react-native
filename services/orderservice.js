@@ -19,7 +19,11 @@ export class OrderService {
   }
 
   getOrders(nextUrl, searchModel) {
-    var url = '/api/orders/?' + this.toQueryString(searchModel);
+    let sm = Object.assign({}, searchModel);
+    if(sm.order_status && sm.order_status.length > 0){
+      sm.order_status = sm.order_status.join(',');
+    }
+    var url = '/api/orders/?' + this.toQueryString(sm);
     if (nextUrl && nextUrl.length > 0) {
       url = nextUrl;
     }

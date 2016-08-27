@@ -116,35 +116,35 @@ export class OrderActions extends Component {
         { status !== Orderstatus.CANCELLED &&
           <TouchableOpacity>
             <View style={[styles.actionBtn, status === Orderstatus.PENDING ? styles.activeBorder : {}]}>
-              <Icon name="md-cart" size={40}  style={[this.isActiveStyle(status, Orderstatus.PENDING), this.isDoneStyle(status, Orderstatus.PENDING)]}/>
+              <Icon name="md-cart" size={30}  style={[this.isActiveStyle(status, Orderstatus.PENDING), this.isDoneStyle(status, Orderstatus.PENDING)]}/>
             </View>
           </TouchableOpacity>
         }
         { status !== Orderstatus.CANCELLED &&
           <TouchableOpacity onPress={this.updateOrderStatus.bind(this, Orderstatus.PREPARING) }>
             <View style={[styles.actionBtn, status === Orderstatus.PREPARING ? styles.activeBorder : {}]}>
-              <Icon name="md-time" size={40} style={[this.isActiveStyle(status, Orderstatus.PREPARING), this.isDoneStyle(status, Orderstatus.PREPARING)]}/>
+              <Icon name="md-time" size={30} style={[this.isActiveStyle(status, Orderstatus.PREPARING), this.isDoneStyle(status, Orderstatus.PREPARING)]}/>
             </View>
           </TouchableOpacity>
         }
         { status !== Orderstatus.CANCELLED &&
           <TouchableOpacity onPress={this.updateOrderStatus.bind(this, Orderstatus.PROGRESS) }>
             <View style={[styles.actionBtn, status === Orderstatus.PROGRESS ? styles.activeBorder : {}]}>
-              <Icon name="md-bicycle" size={40} style={[this.isActiveStyle(status, Orderstatus.PROGRESS), this.isDoneStyle(status, Orderstatus.PROGRESS)]}/>
+              <Icon name="md-bicycle" size={30} style={[this.isActiveStyle(status, Orderstatus.PROGRESS), this.isDoneStyle(status, Orderstatus.PROGRESS)]}/>
             </View>
           </TouchableOpacity>
         }
         { status !== Orderstatus.CANCELLED &&
           <TouchableOpacity onPress={this.updateOrderStatus.bind(this, Orderstatus.DELIVERED) }>
             <View style={[styles.actionBtn, status === Orderstatus.DELIVERED ? styles.activeBorder : {}]}>
-              <Icon name="md-checkmark-circle-outline" size={40} style={[this.isActiveStyle(status, Orderstatus.DELIVERED), this.isDoneStyle(status, Orderstatus.DELIVERED)]}/>
+              <Icon name="md-checkmark-circle-outline" size={30} style={[this.isActiveStyle(status, Orderstatus.DELIVERED), this.isDoneStyle(status, Orderstatus.DELIVERED)]}/>
             </View>
           </TouchableOpacity>
         }
         { status !== Orderstatus.DELIVERED &&
           <TouchableOpacity onPress={this.updateOrderStatus.bind(this, Orderstatus.CANCELLED) }>
             <View style={[styles.actionBtn, status === Orderstatus.CANCELLED ? styles.activeBorder : {}]}>
-              <Icon name="md-close-circle" size={40} style={[this.isActiveStyle(status, Orderstatus.CANCELLED)]}/>
+              <Icon name="md-close-circle" size={30} style={[this.isActiveStyle(status, Orderstatus.CANCELLED)]}/>
             </View>
           </TouchableOpacity>
         }
@@ -195,15 +195,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   actionBtn: {
-    padding: 8,
-    paddingLeft: 10,
-    paddingRight: 10,
     flex: 1,
+    height: 40,
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   activeBorder: {
     backgroundColor: COLOR.paperAmber300.color,
-    borderWidth: 1,
-    borderColor: COLOR.paperYellowA700.color,
     borderRadius: 30
   },
   activeColor: {

@@ -3,6 +3,7 @@ import {
   StyleSheet,
   View,
   Text,
+  TextInput,
   Image,
   ListView,
   ScrollView,
@@ -55,10 +56,17 @@ export default class OrderList extends Component {
       canLoadMoreContent: true,
       searchModel: {
         page_no: 1,
-        page_size: 8,
+        page_size: 10,
         filter_text: '',
-        order_status: ''
-      }
+        order_status: '',
+      },
+      orderStatus: {
+        pending: false,
+        preparing: false,
+        progress: false,
+        delivered: false,
+        cancelled: false,
+      },
     };
     this.service = new OrderService();
   }
@@ -68,12 +76,12 @@ export default class OrderList extends Component {
       isLoading: true
     });
     InteractionManager.runAfterInteractions(() => {
-      this.loadOrders(null, this.state.searchModel);
+      this.loadOrders();
     });
   }
 
-  setOrdersState(x) {
-    let rows = this._orders.concat(x.items);
+  setOrdersState(x, firstLoad) {
+    let rows = firstLoad ? x.items : this._orders.concat(x.items);
     let data = this.ds.cloneWithRows(rows);
     this._orders = rows;
     this.prevUrl = null;
@@ -91,6 +99,16 @@ export default class OrderList extends Component {
       previous: x.previous,
       canLoadMoreContent: x.next && x.next.length > 0,
     })
+    let st = x.order_status || [];
+    this.setState({
+      orderStatus: {
+        pending: st.indexOf(Orderstatus.PENDING) > -1,
+        preparing: st.indexOf(Orderstatus.PREPARING) > -1,
+        progress: st.indexOf(Orderstatus.PROGRESS) > -1,
+        delivered: st.indexOf(Orderstatus.DELIVERED) > -1,
+        cancelled: st.indexOf(Orderstatus.CANCELLED) > -1,
+      }
+    });
   }
 
   async loadOrders() {
@@ -109,7 +127,7 @@ export default class OrderList extends Component {
         })
         return;
       }
-      this.setOrdersState(x);
+      this.setOrdersState(x, this.state.next === null);
     } catch (e) {
       console.error(e);
       this.setState({
@@ -168,39 +186,191 @@ export default class OrderList extends Component {
   // rightIcon={<Icon name="md-arrow-dropright-circle" style={{ color: COLOR.paperTeal500.color, fontSize: 32 }}/>}
 
   render() {
-    let spinner = this.state.isLoading ?
+    let {orders, isLoading} = this.state;
+    let spinner = isLoading ?
       (<ActivityIndicator
         color={COLOR.paperIndigo400.color}
         style={[styles.centering, { height: 80 }]}
         size="large"
         />) : (<View/>);
-    let {orders} = this.state;
     return (
       <View style={{ flex: 1 }}>
+        {
+          this.getFilterView()
+        }
         {spinner}
-        <ListView
-          renderScrollComponent={props => <InfiniteScrollView {...props} />}
-          dataSource={orders}
-          enableEmptySections={true}
-          renderRow={this.renderRow.bind(this) }
-          canLoadMore={this.state.canLoadMoreContent}
-          onLoadMoreAsync={this.loadOrders.bind(this) }
-          renderLoadingIndicator={() => (
-            <ActivityIndicator
-              color={COLOR.paperIndigo400.color}
-              style={[styles.centering, { height: 80 }]}
-              size="large"
-              />
-          ) }
-          renderLoadingErrorIndicator={() => (
-            <ActivityIndicator
-              color={COLOR.paperRed900.color}
-              style={[styles.centering, { height: 80 }]}
-              size="large"
-              />
-          ) }
-          />
+        {!isLoading &&
+          <ListView
+            renderScrollComponent={props => <InfiniteScrollView {...props} />}
+            dataSource={orders}
+            enableEmptySections={true}
+            renderRow={this.renderRow.bind(this) }
+            canLoadMore={this.state.canLoadMoreContent}
+            onLoadMoreAsync={this.loadOrders.bind(this) }
+            renderLoadingIndicator={() => (
+              <ActivityIndicator
+                color={COLOR.paperIndigo400.color}
+                style={[styles.centering, { height: 80 }]}
+                size="large"
+                />
+            ) }
+            renderLoadingErrorIndicator={() => (
+              <ActivityIndicator
+                color={COLOR.paperRed900.color}
+                style={[styles.centering, { height: 80 }]}
+                size="large"
+                />
+            ) }
+            />
+        }
       </View>
     )
   }
+
+  searchSubmit() {
+    let sm = this.state.searchModel;
+    sm.page_no = 1;
+    this.setState({ next: null, searchModel: sm, isLoading: true });
+    InteractionManager.runAfterInteractions(() => {
+      this.loadOrders();
+    });
+  }
+
+  getFilterView() {
+    return (
+      <View style={pstyles.searchContainer}>
+        <View style={{ flex: 1, flexDirection: 'row', paddingRight: 20, paddingLeft: 20 }}>
+          <TextInput style={pstyles.searchTxt}
+            placeholder="Search phone, email, order no..."
+            returnKeyType="search"
+            selectTextOnFocus={true}
+            selectionColor={COLOR.paperPink300.color}
+            placeholderTextColor={COLOR.paperBlueGrey300.color}
+            value={this.state.searchModel.filter_text}
+            maxLength={100}
+            onSubmitEditing={this.searchSubmit.bind(this) }
+            onChangeText={(text) => {
+              let sm = this.state.searchModel;
+              sm.filter_text = text.substring(0, 100).trim();
+              this.setState({ searchModel: sm });
+            } }
+            />
+          <TouchableOpacity
+            onPress={this.searchSubmit.bind(this) }
+            style={pstyles.searchBtn}>
+            <Icon name="md-search" size={20} color="white" />
+          </TouchableOpacity>
+        </View>
+        {
+          this.buildFilterIcons()
+        }
+      </View>
+    );
+  }
+
+  buildFilterIcons() {
+    let {pending, preparing, progress, delivered, cancelled} = this.state.orderStatus;
+    return (
+      <View style={pstyles.actionBtnContainer}>
+        <TouchableOpacity onPress={this.updateFilterOrderStatus.bind(this, 'pending') }>
+          <View style={[pstyles.actionBtn, pending ? pstyles.activeBorder : {}]}>
+            <Icon name="md-cart" size={30} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this.updateFilterOrderStatus.bind(this, 'preparing') }>
+          <View style={[pstyles.actionBtn, preparing ? pstyles.activeBorder : {}]}>
+            <Icon name="md-time" size={30} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this.updateFilterOrderStatus.bind(this, 'progress') }>
+          <View style={[pstyles.actionBtn, progress ? pstyles.activeBorder : {}]}>
+            <Icon name="md-bicycle" size={30} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this.updateFilterOrderStatus.bind(this, 'delivered') }>
+          <View style={[pstyles.actionBtn, delivered ? pstyles.activeBorder : {}]}>
+            <Icon name="md-checkmark-circle-outline" size={30} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this.updateFilterOrderStatus.bind(this, 'cancelled') }>
+          <View style={[pstyles.actionBtn, cancelled ? pstyles.activeBorder : {}]}>
+            <Icon name="md-close-circle" size={30} />
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  updateFilterOrderStatus(key) {
+    let model = this.state.orderStatus;
+    let sm = this.state.searchModel;
+    let os = sm.order_status || [];
+    let v = model[key];
+    model[key] = !v;
+    let idx = os.indexOf(key.toUpperCase());
+    if (v === false && idx === -1) {
+      os.push(key.toUpperCase());
+    } else if (v === true && idx > -1) {
+      os.splice(idx, 1);
+    }
+    sm.order_status = os;
+    this.setState({
+      orderStatus: model,
+      searchModel: sm
+    });
+  }
 }
+
+
+const pstyles = StyleSheet.create({
+  actionBtnContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'stretch',
+  },
+  actionBtn: {
+    height: 40,
+    width: 40,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  activeBorder: {
+    backgroundColor: COLOR.paperAmber300.color,
+    borderRadius: 30
+  },
+  activeColor: {
+    color: COLOR.paperGrey50.color,
+  },
+  done: {
+    color: COLOR.paperGreen700.color,
+  },
+  cancelled: {
+    color: COLOR.paperRed700.color,
+  },
+  searchContainer: {
+    padding: 5,
+    height: 95,
+    borderBottomWidth: 1,
+    borderBottomColor: COLOR.paperBlue700.color,
+    alignItems: 'stretch', justifyContent: 'flex-start'
+  },
+  searchTxt: {
+    flex: 1,
+    height: 40,
+    fontSize: 20,
+    padding: 3,
+    borderBottomWidth: 1,
+    borderBottomColor: COLOR.paperTeal500.color,
+  },
+  searchBtn: {
+    backgroundColor: COLOR.paperBlueGrey700.color,
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+});
+

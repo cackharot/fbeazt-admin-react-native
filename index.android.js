@@ -52,9 +52,16 @@ class FbeaztAdmin extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: null,
+      user: this.fakeUser(),
       drawer: null,
       navigator: null,
+    };
+  }
+
+  fakeUser() {
+    return true ? null : {
+      name: 'Test',
+      email: 'test@Foodbeazt.in',
     };
   }
 
