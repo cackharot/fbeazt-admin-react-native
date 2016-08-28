@@ -208,12 +208,11 @@ class FbeaztAdmin extends Component {
   }
 
   _tryNavigateOnNotification(notification) {
-    if (notification.order_id) {
-      _.navigator.push({
-        id: 'orderdetails',
-        title: '#' + notification.order_no + ' Details',
-        passProps: { order_id: notification.order_id }
-      });
+    if (notification.order_id && notification.order_no.length > 0) {
+      const { navigator } = this.state;
+      const { order_no, order_id } = notification;
+      let name = '#' + order_no + ' Details';
+      navigator.forward('orderdetails', name, { order_id: order_id });
     }
   }
 

@@ -12,6 +12,7 @@ import {
   TouchableNativeFeedback,
   ActivityIndicator,
   InteractionManager,
+  RefreshControl,
 } from 'react-native';
 
 import {
@@ -198,10 +199,16 @@ export default class OrderList extends Component {
         {
           this.getFilterView()
         }
-        {spinner}
-        {!isLoading &&
+        {
           <ListView
             renderScrollComponent={props => <InfiniteScrollView {...props} />}
+            refreshControl={
+              <RefreshControl
+                colors={[COLOR.paperIndigo400.color, COLOR.paperBlue400.color, COLOR.paperPink400.color]}
+                refreshing={this.state.isLoading}
+                onRefresh={this.searchSubmit.bind(this) }
+                />
+            }
             dataSource={orders}
             enableEmptySections={true}
             renderRow={this.renderRow.bind(this) }
@@ -238,33 +245,39 @@ export default class OrderList extends Component {
 
   getFilterView() {
     return (
-      <View style={pstyles.searchContainer}>
-        <View style={{ flex: 1, flexDirection: 'row', paddingRight: 20, paddingLeft: 20 }}>
-          <TextInput style={pstyles.searchTxt}
-            placeholder="Search phone, email, order no..."
-            returnKeyType="search"
-            selectTextOnFocus={true}
-            selectionColor={COLOR.paperPink300.color}
-            placeholderTextColor={COLOR.paperBlueGrey300.color}
-            value={this.state.searchModel.filter_text}
-            maxLength={100}
-            onSubmitEditing={this.searchSubmit.bind(this) }
-            onChangeText={(text) => {
-              let sm = this.state.searchModel;
-              sm.filter_text = text.substring(0, 100).trim();
-              this.setState({ searchModel: sm });
-            } }
-            />
-          <TouchableOpacity
-            onPress={this.searchSubmit.bind(this) }
-            style={pstyles.searchBtn}>
-            <Icon name="md-search" size={20} color="white" />
-          </TouchableOpacity>
-        </View>
-        {
-          this.buildFilterIcons()
-        }
-      </View>
+      <Card>
+        <Card.Body>
+          <View style={pstyles.searchContainer}>
+            <View style={{ flex: 1, flexDirection: 'row' }}>
+              <TextInput style={pstyles.searchTxt}
+                placeholder="Search phone, email, order no..."
+                returnKeyType="search"
+                selectTextOnFocus={true}
+                selectionColor={COLOR.paperPink300.color}
+                placeholderTextColor={COLOR.paperBlueGrey300.color}
+                value={this.state.searchModel.filter_text}
+                maxLength={100}
+                onSubmitEditing={this.searchSubmit.bind(this) }
+                onChangeText={(text) => {
+                  let sm = this.state.searchModel;
+                  sm.filter_text = text.substring(0, 100).trim();
+                  this.setState({ searchModel: sm });
+                } }
+                />
+              <TouchableOpacity
+                onPress={this.searchSubmit.bind(this) }
+                style={pstyles.searchBtn}>
+                <Icon name="md-search" size={20} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Card.Body>
+        <Card.Actions position="left">
+          {
+            this.buildFilterIcons()
+          }
+        </Card.Actions>
+      </Card>
     );
   }
 
@@ -328,6 +341,7 @@ const pstyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'stretch',
+    marginBottom: 8
   },
   actionBtn: {
     height: 40,
@@ -350,10 +364,6 @@ const pstyles = StyleSheet.create({
     color: COLOR.paperRed700.color,
   },
   searchContainer: {
-    padding: 5,
-    height: 95,
-    borderBottomWidth: 1,
-    borderBottomColor: COLOR.paperBlue700.color,
     alignItems: 'stretch', justifyContent: 'flex-start'
   },
   searchTxt: {
@@ -366,7 +376,7 @@ const pstyles = StyleSheet.create({
   },
   searchBtn: {
     backgroundColor: COLOR.paperBlueGrey700.color,
-    borderRadius: 15,
+    borderRadius: 3,
     width: 30,
     height: 30,
     alignItems: 'center',
