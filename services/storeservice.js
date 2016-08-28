@@ -28,4 +28,12 @@ export class StoreService extends BaseService {
       })
       .then((response) => response.json());
   }
+
+  getDishes(store_id) {
+    return fetch(Config.BASE_URL + '/api/products/' + store_id,
+      {
+        headers: this.headers
+      })
+      .then((response) => response.json());
+  }
 }

@@ -146,7 +146,7 @@ export default class StoreList extends Component {
         text: (<Text><Icon name="md-locate" /> {store.address}</Text>)
       },
       {
-        text: (<Text>Open: {store.open_time} Close: {store.close_time}</Text>)
+        text: (<Text><Icon name="md-clock" /> {store.open_time} AM - {store.close_time} PM</Text>)
       }
     ]
     return (
