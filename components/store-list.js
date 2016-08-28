@@ -149,6 +149,7 @@ export default class StoreList extends Component {
         text: (<Text><Icon name="md-clock" /> {store.open_time} AM - {store.close_time} PM</Text>)
       }
     ]
+    let isNonVeg = store.food_type.indexOf('non-veg') > -1;
     return (
       <TouchableNativeFeedback key={rowID}
         onPress={() => this.rowPressed(store._id.$oid) }
@@ -159,27 +160,29 @@ export default class StoreList extends Component {
             secondaryTextMoreLine={moreMsg}
             lines={4}
             primaryColor={'#002b36'}
-            rightIcon={
-              <View style={{
-                backgroundColor: COLOR.paperGreen700.color,
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 46,
-                height: 46,
-                borderRadius: 23
-              }}>
-                <Icon
-                  name="md-list-box"
-                  color={COLOR.paperGrey50.color} size={24}/>
-              </View>
-            }
+            leftAvatar={<Avatar icon="restaurant"
+              color={COLOR.paperGrey50.color}
+              backgroundColor={isNonVeg ? COLOR.paperRed700.color : COLOR.paperGreen700.color}/>}
             />
           <Divider inset={false} style={{ marginTop: 0 }} />
         </View>
       </TouchableNativeFeedback>
     );
   }
-
+  // rightIcon={
+  //   <View style={{
+  //     backgroundColor: COLOR.paperGreen700.color,
+  //     alignItems: 'center',
+  //     justifyContent: 'center',
+  //     width: 46,
+  //     height: 46,
+  //     borderRadius: 23
+  //   }}>
+  //     <Icon
+  //       name="md-list-box"
+  //       color={COLOR.paperGrey50.color} size={24}/>
+  //   </View>
+  // }
   render() {
     let {stores, isLoading} = this.state;
     return (

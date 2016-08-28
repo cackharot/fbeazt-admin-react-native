@@ -61,7 +61,7 @@ export class StoreDishesList extends Component {
     let categories = this.getCategories(dishes);
     return (
       <View>
-        <Subheader text={ 'Menu ('+ dishes.length +')'}/>
+        <Subheader text={ 'Menu (' + dishes.length + ')'}/>
         {categories &&
           <IndicatorViewPager
             style={[pstyles.viewPager, { height: (this.getMaxItemCount(dishes, categories) * 80) + 20 }]}
@@ -76,6 +76,10 @@ export class StoreDishesList extends Component {
                       primaryColor={'#002b36'}
                       captionText={'Rs.' + dish.sell_price}
                       captionStyle={[TYPO.paperFontSubhead, COLOR.paperTeal600]}
+                      rightIcon={<Avatar icon="local-cafe"
+                        color={COLOR.paperGrey50.color}
+                        size={30}
+                        backgroundColor={dish.food_type.indexOf('non-veg') > -1 ? COLOR.paperRed700.color : COLOR.paperGreen700.color}/>}
                       />
                     <Divider />
                   </TouchableOpacity>
@@ -90,7 +94,7 @@ export class StoreDishesList extends Component {
   }
 
   _renderTitleIndicator(dishes, categories) {
-    let titles = categories.map(x => x.toUpperCase() + ' ('+ this.getItems(dishes, x).length +')');
+    let titles = categories.map(x => x.toUpperCase() + ' (' + this.getItems(dishes, x).length + ')');
     return <PagerTitleIndicator
       style={pstyles.indicatorContainer}
       itemTextStyle={pstyles.indicatorText}

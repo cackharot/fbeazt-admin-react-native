@@ -105,9 +105,13 @@ export default class StoreDetailsView extends Component {
 
   buildStoreHeading(store) {
     let storeDateStr = DateHelper.formatDate(new Date(store.created_at.$date));
+    let isNonVeg = store.food_type.indexOf('non-veg') > -1;
     return (
       <Card>
         <Card.Media image={<Image source={require('../assets/images/bg4.png') } />}  overlay>
+          <Avatar icon="restaurant"
+            color={COLOR.paperGrey50.color}
+            backgroundColor={isNonVeg ? COLOR.paperRed700.color : COLOR.paperGreen700.color}/>
           <Text style={[TYPO.paperFontHeadline, COLOR.paperGrey50]}>
             {store.name}
           </Text>
@@ -118,11 +122,11 @@ export default class StoreDetailsView extends Component {
         <Card.Body>
           <View style={{ flex: 1, flexDirection: 'row' }}>
             <Text style={[TYPO.paperSubhead, COLOR.paperGrey70]}>
-              <Icon name="md-call" /> {store.phone.trim()}
+              <Icon name="md-call" /> {store.phone}
             </Text>
           </View>
           <Text style={[TYPO.paperBody, COLOR.paperGrey90]}>
-            <Icon name="md-locate" /> {store.address.trim()}
+            <Icon name="md-locate" /> {store.address}
           </Text>
           <Text style={[TYPO.paperBody, COLOR.paperGrey90]}>
             <Icon name="md-images" /> {store.holidays.join(', ') }
