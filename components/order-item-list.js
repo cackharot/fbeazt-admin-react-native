@@ -68,7 +68,7 @@ export class OrderItemList extends Component {
         <Subheader text="Items"/>
         {stores.length > 1 &&
           <IndicatorViewPager
-            style={[pstyles.viewPager, { height: (this.getMaxItemCount(order.items, stores) * 80) + 70 }]}
+            style={[pstyles.viewPager, { height: (this.getMaxItemCount(order.items, stores) * 80) + 90 }]}
             indicator={this._renderTitleIndicator(order.items, stores) }>
             {stores.map((store, i) => (
               <View key={i} style={pstyles.pageStyle}>

@@ -17,6 +17,7 @@ import {
   , TYPO
 } from 'react-native-material-design';
 
+import Communications from 'react-native-communications';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { List } from './List';
@@ -45,11 +46,11 @@ export class OrderHeading extends Component {
       return false;
     }
     let orderDateStr = DateHelper.formatDate(new Date(order.created_at.$date));
-    let {statusIcon,statusColor} = OrderHelper.getStatusIcon(order.status.toUpperCase());
+    let {statusIcon, statusColor} = OrderHelper.getStatusIcon(order.status.toUpperCase());
     let totalItemQty = order.items.reduce((i, x) => i + x.quantity, 0);
     return (
       <Card>
-        <Card.Media image={<Image source={require('../assets/images/bg2.jpg')} />}  overlay>
+        <Card.Media image={<Image source={require('../assets/images/bg2.jpg') } />}  overlay>
           <Avatar icon={statusIcon}  backgroundColor={statusColor}/>
           <Text style={[TYPO.paperFontHeadline, COLOR.paperGrey50]}>
             {order.order_no}
@@ -63,9 +64,14 @@ export class OrderHeading extends Component {
             {order.delivery_details.name}
           </Text>
           <View style={{ flex: 1, flexDirection: 'row' }}>
-            <Text style={[TYPO.paperBody, COLOR.paperGrey70]}>
-              <Icon name="md-call" /> {order.delivery_details.phone}
-            </Text>
+            <TouchableOpacity onPress={() => Communications.phonecall(store.phone, true) }>
+              <Text style={[TYPO.paperBody, COLOR.paperGrey70]}>
+                <Icon name="md-call" />
+                <Text style={{ textDecorationLine: 'underline', color: COLOR.paperLightBlueA700.color }}>
+                  {order.delivery_details.phone}
+                </Text>
+              </Text>
+            </TouchableOpacity>
             <Text style={[TYPO.paperBody, COLOR.paperGrey70, { marginLeft: 15 }]}>
               <Icon name="md-mail" /> {order.delivery_details.email}
             </Text>

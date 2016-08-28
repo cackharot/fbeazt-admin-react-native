@@ -31,6 +31,7 @@ import {
 } from 'react-native-material-design';
 
 import * as _ from 'lodash';
+import Communications from 'react-native-communications';
 
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
@@ -140,7 +141,14 @@ export default class StoreList extends Component {
   renderRow(store, sectionID, rowID) {
     var moreMsg = [
       {
-        text: (<Text><Icon name="md-call" />{' ' + store.phone}</Text>)
+        text: (
+          <Text onPress={() => Communications.phonecall(store.phone, true) }>
+            <Icon name="md-call" />
+            <Text style={[TYPO.paperSubhead, COLOR.paperLightBlueA700, { textDecorationLine: 'underline' }]}>
+              {' ' + store.phone}
+            </Text>
+          </Text>
+        )
       },
       {
         text: (<Text><Icon name="md-locate" /> {store.address}</Text>)

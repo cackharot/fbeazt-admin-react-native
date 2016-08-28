@@ -31,6 +31,7 @@ import {
 } from 'react-native-material-design';
 
 import * as _ from 'lodash';
+import Communications from 'react-native-communications';
 
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
@@ -171,7 +172,16 @@ export default class OrderList extends Component {
     let dateStr = DateHelper.time_ago(new Date(order.created_at.$date));
     var moreMsg = [
       {
-        text: (<Text>{order.delivery_details.name}  <Icon name="md-call" />{order.delivery_details.phone}</Text>),
+        text: (
+          <Text>
+            {order.delivery_details.name + '  '}
+            <Icon name="md-call" />
+            <Text onPress={() => Communications.phonecall(store.phone, true) }
+              style={[TYPO.paperSubhead, COLOR.paperLightBlueA700, { textDecorationLine: 'underline' }]}>
+              {order.delivery_details.phone}
+            </Text>
+          </Text>
+        ),
       },
       {
         // text: (<Text><Icon name="md-mail" /> {order.delivery_details.email}</Text>)

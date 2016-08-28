@@ -27,6 +27,8 @@ import {
   , TYPO
 } from 'react-native-material-design';
 
+import Communications from 'react-native-communications';
+
 import { List } from './List';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { styles } from '../app.styles';
@@ -121,9 +123,12 @@ export default class StoreDetailsView extends Component {
         </Card.Media>
         <Card.Body>
           <View style={{ flex: 1, flexDirection: 'row' }}>
-            <Text style={[TYPO.paperSubhead, COLOR.paperGrey70]}>
-              <Icon name="md-call" /> {store.phone}
-            </Text>
+            <TouchableOpacity onPress={() => Communications.phonecall(store.phone, true) }>
+              <Text style={[TYPO.paperSubhead, COLOR.paperGrey90]}>
+                <Icon name="md-call" />
+                <Text style={{ textDecorationLine: 'underline', color: COLOR.paperLightBlueA700.color }}> {store.phone}</Text>
+              </Text>
+            </TouchableOpacity>
           </View>
           <Text style={[TYPO.paperBody, COLOR.paperGrey90]}>
             <Icon name="md-locate" /> {store.address}
@@ -154,7 +159,7 @@ export default class StoreDetailsView extends Component {
         <Card.Actions position="left">
           <View/>
         </Card.Actions>
-      </Card>
+      </Card >
     );
   }
 }
