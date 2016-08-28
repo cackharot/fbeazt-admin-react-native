@@ -158,7 +158,7 @@ export default class OrderList extends Component {
         text: (<Text><Icon name="md-locate" /> {order.delivery_details.address}</Text>)
       },
       {
-        text: (<Text>Items: {order.items.length}/{totalItemQty}, On: {dateStr}</Text>)
+        text: (<Text>Items: {order.items.length}/{totalItemQty}, <Icon name="md-calendar" /> {dateStr}</Text>)
       }
     ]
     let {statusIcon, statusColor} = OrderHelper.getStatusIcon(order.status.toUpperCase());
