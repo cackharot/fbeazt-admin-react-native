@@ -30,6 +30,7 @@ import {
   , COLOR
 } from 'react-native-material-design';
 
+import Config from 'react-native-config';
 import * as _ from 'lodash';
 import Communications from 'react-native-communications';
 
@@ -141,21 +142,22 @@ export default class StoreList extends Component {
   renderRow(store, sectionID, rowID) {
     var moreMsg = [
       {
+        text: (<Text style={[TYPO.paperFontSubhead, COLOR.paperBlueGrey700]}>{store.contact_name || 'contact name'}</Text>)
+      },
+      {
         text: (
           <Text onPress={() => Communications.phonecall(store.phone, true) }>
             <Icon name="md-call" />
             <Text style={[TYPO.paperSubhead, COLOR.paperLightBlueA700, { textDecorationLine: 'underline' }]}>
               {' ' + store.phone}
             </Text>
+            <Text> {'  '} <Icon name="md-time" /> {store.open_time} AM - {store.close_time} PM</Text>
           </Text>
         )
       },
       {
         text: (<Text><Icon name="md-locate" /> {store.address}</Text>)
       },
-      {
-        text: (<Text><Icon name="md-clock" /> {store.open_time} AM - {store.close_time} PM</Text>)
-      }
     ]
     let isNonVeg = store.food_type.indexOf('non-veg') > -1;
     return (
@@ -168,8 +170,10 @@ export default class StoreList extends Component {
             secondaryTextMoreLine={moreMsg}
             lines={4}
             primaryColor={'#002b36'}
-            leftAvatar={<Avatar icon="restaurant"
+            leftAvatar={this.getStoreImage(store) }
+            rightIcon={<Avatar icon="restaurant"
               color={COLOR.paperGrey50.color}
+              size={30}
               backgroundColor={isNonVeg ? COLOR.paperRed700.color : COLOR.paperGreen700.color}/>}
             />
           <Divider inset={false} style={{ marginTop: 0 }} />
@@ -177,6 +181,15 @@ export default class StoreList extends Component {
       </TouchableNativeFeedback>
     );
   }
+
+  getStoreImage(item) {
+    if (!item.image_url || item.image_url.length == 0) {
+      return (<Avatar size={50} borderRadius={5} image={<Image source={require('../assets/images/placeholder.png') }/>}/>);
+    } else {
+      return (<Avatar size={50} borderRadius={5} image={<Image source={{ uri: Config.BASE_URL + '/static/images/stores/' + item.image_url }}/>}/>);
+    }
+  }
+
   // rightIcon={
   //   <View style={{
   //     backgroundColor: COLOR.paperGreen700.color,

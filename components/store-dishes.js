@@ -18,6 +18,7 @@ import {
   , TYPO
 } from 'react-native-material-design';
 
+import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { List } from './List';
 import {IndicatorViewPager, PagerTitleIndicator, PagerDotIndicator} from 'rn-viewpager';
@@ -76,6 +77,7 @@ export class StoreDishesList extends Component {
                       primaryColor={'#002b36'}
                       captionText={'Rs.' + dish.sell_price}
                       captionStyle={[TYPO.paperFontSubhead, COLOR.paperTeal600]}
+                      leftAvatar={this.getDishImage(dish)}
                       rightIcon={<Avatar icon="local-cafe"
                         color={COLOR.paperGrey50.color}
                         size={30}
@@ -91,6 +93,14 @@ export class StoreDishesList extends Component {
         }
       </View>
     );
+  }
+
+  getDishImage(dish){
+    if(!dish.image_url || dish.image_url.length == 0){
+      return (<Avatar size={50} borderRadius={5} image={<Image source={require('../assets/images/placeholder.png')}/>}/>);
+    }else{
+      return (<Avatar size={50} borderRadius={5} image={<Image source={{uri: Config.BASE_URL + '/static/images/products/' + dish.image_url}}/>}/>);
+    }
   }
 
   _renderTitleIndicator(dishes, categories) {

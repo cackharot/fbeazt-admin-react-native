@@ -27,6 +27,7 @@ import {
   , TYPO
 } from 'react-native-material-design';
 
+import Config from 'react-native-config';
 import Communications from 'react-native-communications';
 
 import { List } from './List';
@@ -105,12 +106,20 @@ export default class StoreDetailsView extends Component {
     );
   }
 
+  getStoreImage(item) {
+    if (!item.image_url || item.image_url.length == 0) {
+      return <Image source={require('../assets/images/bg4.png') }/>;
+    } else {
+      return <Image source={{ uri: Config.BASE_URL + '/static/images/stores/' + item.image_url }}/>;
+    }
+  }
+
   buildStoreHeading(store) {
     let storeDateStr = DateHelper.formatDate(new Date(store.created_at.$date));
     let isNonVeg = store.food_type.indexOf('non-veg') > -1;
     return (
       <Card>
-        <Card.Media image={<Image source={require('../assets/images/bg4.png') } />}  overlay>
+        <Card.Media image={this.getStoreImage(store)} overlay>
           <Avatar icon="restaurant"
             color={COLOR.paperGrey50.color}
             backgroundColor={isNonVeg ? COLOR.paperRed700.color : COLOR.paperGreen700.color}/>
@@ -122,6 +131,7 @@ export default class StoreDetailsView extends Component {
           </Text>
         </Card.Media>
         <Card.Body>
+          <Text style={[TYPO.paperFontSubhead, COLOR.paperBlueGrey700]}>{store.contact_name || 'contact name'}</Text>
           <View style={{ flex: 1, flexDirection: 'row' }}>
             <TouchableOpacity onPress={() => Communications.phonecall(store.phone, true) }>
               <Text style={[TYPO.paperSubhead, COLOR.paperGrey90]}>
@@ -137,7 +147,7 @@ export default class StoreDetailsView extends Component {
             <Icon name="md-images" /> {store.holidays.join(', ') }
           </Text>
           <Text style={[TYPO.paperBody, COLOR.paperGrey90]}>
-            <Icon name="md-clock" /> {store.open_time} AM - {store.close_time} PM
+            <Icon name="md-time" /> {store.open_time} AM - {store.close_time} PM
           </Text>
           <View style={{ flex: 1, marginTop: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
             {store.cuisines.map((cusine, i) =>
