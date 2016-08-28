@@ -18,6 +18,7 @@ import {
   , TYPO
 } from 'react-native-material-design';
 
+import Icon from 'react-native-vector-icons/Ionicons';
 import { List } from './List';
 import {IndicatorViewPager, PagerTitleIndicator, PagerDotIndicator} from 'rn-viewpager';
 
@@ -43,8 +44,17 @@ export class OrderItemList extends Component {
     return distinct;
   }
 
+  getItemPrice(item) {
+    return item.quantity * (item.price_detail ? item.price_detail.price : item.price);
+  }
+
   getItems(items, store_id) {
     return items.filter(x => x.store_id.$oid === store_id);
+  }
+
+  getMaxItemCount(items, stores) {
+    let ic = stores.map(x => this.getItems(items, x._id.$oid).length);
+    return ic.sort().reverse()[0];
   }
 
   render() {
@@ -58,8 +68,8 @@ export class OrderItemList extends Component {
         <Subheader text="Items"/>
         {stores.length > 1 &&
           <IndicatorViewPager
-            style={pstyles.viewPager}
-            indicator={this._renderTitleIndicator(stores) }>
+            style={[pstyles.viewPager, { height: (this.getMaxItemCount(order.items, stores) * 80) + 50 }]}
+            indicator={this._renderTitleIndicator(order.items, stores) }>
             {stores.map((store, i) => (
               <View key={i} style={pstyles.pageStyle}>
                 {this.getItems(order.items, store._id.$oid).map((dish, i) => (
@@ -67,13 +77,21 @@ export class OrderItemList extends Component {
                     <List
                       style={{}}
                       primaryText={dish.name}
-                      secondaryText={dish.store.name}
-                      captionText={'Rs.' + (dish.price_detail ? dish.price_detail.price : dish.price).toFixed(2).toString() }
+                      secondaryText={(dish.price_detail && dish.price_detail.description ? dish.price_detail.description + ' - ' : '') + dish.category}
+                      captionText={'Rs.' + this.getItemPrice(dish).toString() }
                       captionStyle={[TYPO.paperFontSubhead, COLOR.paperBlueGrey900]}
+                      rightIcon={<Text>Qty: {dish.quantity.toString() }</Text>}
                       />
                     <Divider />
                   </TouchableOpacity>
                 )) }
+                <List
+                  primaryText={'Store Total'}
+                  captionText={'Rs.' + (this.getItems(order.items, store._id.$oid).reduce((i, x) => i + this.getItemPrice(x), 0)) }
+                  style={pstyles.compact}
+                  captionStyle={[TYPO.paperFontSubhead, COLOR.paperCyan800]}
+                  />
+                <Divider />
               </View>
             )) }
           </IndicatorViewPager>
@@ -84,9 +102,10 @@ export class OrderItemList extends Component {
               <List
                 style={{}}
                 primaryText={dish.name}
-                secondaryText={dish.store.name}
-                captionText={'Rs.' + (dish.price_detail ? dish.price_detail.price : dish.price).toFixed(2).toString() }
+                secondaryText={(dish.price_detail && dish.price_detail.description ? dish.price_detail.description + ' - ' : '') + dish.category}
+                captionText={'Rs.' + this.getItemPrice(dish).toString() }
                 captionStyle={[TYPO.paperFontSubhead, COLOR.paperBlueGrey900]}
+                rightIcon={<Text>Qty: {dish.quantity.toString() }</Text>}
                 />
               <Divider />
             </TouchableOpacity>
@@ -113,8 +132,8 @@ export class OrderItemList extends Component {
     );
   }
 
-  _renderTitleIndicator(stores) {
-    let store_names = stores.map(x => x.name);
+  _renderTitleIndicator(items, stores) {
+    let store_names = stores.map(x => x.name + ' (' + this.getItems(items, x._id.$oid).length + ')');
     return <PagerTitleIndicator
       style={pstyles.indicatorContainer}
       itemTextStyle={pstyles.indicatorText}

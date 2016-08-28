@@ -77,7 +77,7 @@ export class List extends Component {
                                 {primaryText}
                             </Text>
                         </View>
-                        {(lines > 2 && !!rightIcon) ||
+                        {(!!rightIcon) ||
                             <View style={styles.captionTextContainer}>
                                 <Text style={[styles.captionText, captionStyle]}>
                                     {captionText}
@@ -114,7 +114,7 @@ export class List extends Component {
                     </View>
                 }
                 <View style={{ flexDirection: 'column' }}>
-                    {lines > 2 && !!rightIcon && !!captionText &&
+                    {!!rightIcon && !!captionText &&
                         <View style={styles.captionTextContainer2}>
                             <Text style={[styles.captionText, captionStyle]}>{captionText}</Text>
                         </View>}
@@ -122,8 +122,7 @@ export class List extends Component {
                     {rightIcon &&
                         <Ripple onPress={onRightIconClicked}>
                             <View
-                                style={[styles.rightIcon, { flex: 1 }, lines > 2 && {
-                                    paddingTop: 16,
+                                style={[styles.rightIcon, { flex: 1 }, {
                                     alignSelf: 'flex-end',
                                     justifyContent: 'flex-end'
                                 }]}
@@ -153,10 +152,10 @@ const styles = StyleSheet.create({
         top: -6
     },
     rightIcon: {
-        paddingLeft: 16,
+        // paddingLeft: 10,
         position: 'relative',
-        top: -3,
-        left: -8
+        top: 0,
+        right: 0
     },
     leftAvatar: {
         width: 56
