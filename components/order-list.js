@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
   InteractionManager,
   RefreshControl,
+  AsyncStorage,
 } from 'react-native';
 
 import {
@@ -83,10 +84,15 @@ export default class OrderList extends Component {
     this.reportService = new ReportService();
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.setState({
       isLoading: true
     });
+    let sm = await this.getSearchModel();
+    if (sm) {
+      console.log('stored search model', sm);
+      this.setState({ searchModel: sm });
+    }
     InteractionManager.runAfterInteractions(() => {
       this.loadOrders();
       this.loadReports();
@@ -248,11 +254,26 @@ export default class OrderList extends Component {
   searchSubmit() {
     let sm = this.state.searchModel;
     sm.page_no = 1;
+    this.storeSearchModel(sm);
     this.setState({ next: null, searchModel: sm, isLoading: true });
     InteractionManager.runAfterInteractions(() => {
       this.loadOrders();
       this.loadReports();
     });
+  }
+
+  async getSearchModel() {
+    try {
+      let modelStr = await AsyncStorage.getItem('__search__model');
+      return JSON.parse(modelStr);
+    } catch (e) {
+      console.log(e);
+    }
+    return null;
+  }
+
+  storeSearchModel(model) {
+    AsyncStorage.setItem('__search__model', JSON.stringify(model)).done();
   }
 
   getFilterView() {
@@ -301,6 +322,7 @@ export default class OrderList extends Component {
           style={[pstyles.actionBtn, pending ? pstyles.activeBorder : {}]}
           onPress={this.updateFilterOrderStatus.bind(this, 'pending') }>
           <IconToggle
+            onPress={this.updateFilterOrderStatus.bind(this, 'pending') }
             color={'paperRed'}
             badge={{
               value: this.state.reports.pending,
@@ -315,6 +337,7 @@ export default class OrderList extends Component {
           style={[pstyles.actionBtn, preparing ? pstyles.activeBorder : {}]}
           onPress={this.updateFilterOrderStatus.bind(this, 'preparing') }>
           <IconToggle
+            onPress={this.updateFilterOrderStatus.bind(this, 'preparing') }
             color={'paperRed'}
             badge={{
               value: this.state.reports.preparing,
@@ -329,6 +352,7 @@ export default class OrderList extends Component {
           style={[pstyles.actionBtn, progress ? pstyles.activeBorder : {}]}
           onPress={this.updateFilterOrderStatus.bind(this, 'progress') }>
           <IconToggle
+            onPress={this.updateFilterOrderStatus.bind(this, 'progress') }
             color={'paperRed'}
             badge={{
               value: this.state.reports.progress,
@@ -343,6 +367,7 @@ export default class OrderList extends Component {
           style={[pstyles.actionBtn, delivered ? pstyles.activeBorder : {}]}
           onPress={this.updateFilterOrderStatus.bind(this, 'delivered') }>
           <IconToggle
+            onPress={this.updateFilterOrderStatus.bind(this, 'delivered') }
             color={'paperRed'}
             badge={{
               value: this.state.reports.delivered,
@@ -357,6 +382,7 @@ export default class OrderList extends Component {
           style={[pstyles.actionBtn, cancelled ? pstyles.activeBorder : {}]}
           onPress={this.updateFilterOrderStatus.bind(this, 'cancelled') }>
           <IconToggle
+            onPress={this.updateFilterOrderStatus.bind(this, 'cancelled') }
             color={'paperRed'}
             badge={{
               value: this.state.reports.cancelled,
