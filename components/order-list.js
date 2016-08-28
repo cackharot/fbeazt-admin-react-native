@@ -41,6 +41,7 @@ import {OrderService} from '../services/orderservice';
 import {ReportService} from '../services/reportservice';
 import {OrderDetailsView} from './order-details';
 import { OrderHelper, Orderstatus } from '../utils/OrderHelper';
+import { DateHelper } from '../utils/DateHelper';
 
 export default class OrderList extends Component {
   static contextTypes = {
@@ -160,7 +161,8 @@ export default class OrderList extends Component {
 
   renderRow(order, sectionID, rowID) {
     var totalItemQty = order.items.reduce((i, x) => i + x.quantity, 0);
-    let dateStr = OrderHelper.formatDate(new Date(order.created_at.$date));
+    // let dateStr = OrderHelper.formatDate(new Date(order.created_at.$date));
+    let dateStr = DateHelper.time_ago(new Date(order.created_at.$date));
     var moreMsg = [
       {
         text: (<Text>{order.delivery_details.name}  <Icon name="md-call" />{order.delivery_details.phone}</Text>),

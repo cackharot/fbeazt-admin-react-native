@@ -23,6 +23,7 @@ import { List } from './List';
 import { OrderActions } from './order-actions';
 
 import { OrderHelper, Orderstatus } from '../utils/OrderHelper';
+import { DateHelper } from '../utils/DateHelper';
 
 export class OrderHeading extends Component {
   static propTypes = {
@@ -43,7 +44,7 @@ export class OrderHeading extends Component {
     if (!order) {
       return false;
     }
-    let orderDateStr = OrderHelper.formatDate(new Date(order.created_at.$date));
+    let orderDateStr = DateHelper.formatDate(new Date(order.created_at.$date));
     let {statusIcon,statusColor} = OrderHelper.getStatusIcon(order.status.toUpperCase());
     let totalItemQty = order.items.reduce((i, x) => i + x.quantity, 0);
     return (

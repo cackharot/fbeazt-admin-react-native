@@ -68,7 +68,7 @@ export class OrderItemList extends Component {
         <Subheader text="Items"/>
         {stores.length > 1 &&
           <IndicatorViewPager
-            style={[pstyles.viewPager, { height: (this.getMaxItemCount(order.items, stores) * 80) + 50 }]}
+            style={[pstyles.viewPager, { height: (this.getMaxItemCount(order.items, stores) * 80) + 70 }]}
             indicator={this._renderTitleIndicator(order.items, stores) }>
             {stores.map((store, i) => (
               <View key={i} style={pstyles.pageStyle}>
@@ -85,6 +85,12 @@ export class OrderItemList extends Component {
                     <Divider />
                   </TouchableOpacity>
                 )) }
+                <List
+                  primaryText={'Item Count/Quantity'}
+                  captionText={this.getItems(order.items, store._id.$oid).length + '/' + this.getItems(order.items, store._id.$oid).reduce((i, x) => i + x.quantity, 0) }
+                  style={pstyles.compact}
+                  captionStyle={[TYPO.paperFontSubhead, COLOR.paperTeal800]}
+                  />
                 <List
                   primaryText={'Store Total'}
                   captionText={'Rs.' + (this.getItems(order.items, store._id.$oid).reduce((i, x) => i + this.getItemPrice(x), 0)) }

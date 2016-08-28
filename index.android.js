@@ -59,7 +59,7 @@ class FbeaztAdmin extends Component {
   }
 
   fakeUser() {
-    return true ? null : {
+    return false ? null : {
       name: 'Test',
       email: 'test@Foodbeazt.in',
     };
