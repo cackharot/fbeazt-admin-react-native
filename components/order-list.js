@@ -38,6 +38,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { styles } from '../app.styles';
 
 import {OrderService} from '../services/orderservice';
+import {ReportService} from '../services/reportservice';
 import {OrderDetailsView} from './order-details';
 import { OrderHelper, Orderstatus } from '../utils/OrderHelper';
 
@@ -68,8 +69,17 @@ export default class OrderList extends Component {
         delivered: false,
         cancelled: false,
       },
+      reports: {
+        total: 0,
+        pending: 0,
+        preparing: 0,
+        progress: 0,
+        delivered: 0,
+        cancelled: 0,
+      }
     };
     this.service = new OrderService();
+    this.reportService = new ReportService();
   }
 
   componentDidMount() {
@@ -78,6 +88,7 @@ export default class OrderList extends Component {
     });
     InteractionManager.runAfterInteractions(() => {
       this.loadOrders();
+      this.loadReports();
     });
   }
 
@@ -184,8 +195,6 @@ export default class OrderList extends Component {
     );
   }
 
-  // rightIcon={<Icon name="md-arrow-dropright-circle" style={{ color: COLOR.paperTeal500.color, fontSize: 32 }}/>}
-
   render() {
     let {orders, isLoading} = this.state;
     let spinner = isLoading ?
@@ -240,6 +249,7 @@ export default class OrderList extends Component {
     this.setState({ next: null, searchModel: sm, isLoading: true });
     InteractionManager.runAfterInteractions(() => {
       this.loadOrders();
+      this.loadReports();
     });
   }
 
@@ -285,30 +295,74 @@ export default class OrderList extends Component {
     let {pending, preparing, progress, delivered, cancelled} = this.state.orderStatus;
     return (
       <View style={pstyles.actionBtnContainer}>
-        <TouchableOpacity onPress={this.updateFilterOrderStatus.bind(this, 'pending') }>
-          <View style={[pstyles.actionBtn, pending ? pstyles.activeBorder : {}]}>
-            <Icon name="md-cart" size={30} />
-          </View>
+        <TouchableOpacity
+          style={[pstyles.actionBtn, pending ? pstyles.activeBorder : {}]}
+          onPress={this.updateFilterOrderStatus.bind(this, 'pending') }>
+          <IconToggle
+            color={'paperRed'}
+            badge={{
+              value: this.state.reports.pending,
+              animated: true,
+              backgroundColor: COLOR.paperLightBlueA400.color
+            }}
+            >
+            <Icon name="md-cart" size={22} style={{ margin: 16 }} />
+          </IconToggle>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this.updateFilterOrderStatus.bind(this, 'preparing') }>
-          <View style={[pstyles.actionBtn, preparing ? pstyles.activeBorder : {}]}>
-            <Icon name="md-time" size={30} />
-          </View>
+        <TouchableOpacity
+          style={[pstyles.actionBtn, preparing ? pstyles.activeBorder : {}]}
+          onPress={this.updateFilterOrderStatus.bind(this, 'preparing') }>
+          <IconToggle
+            color={'paperRed'}
+            badge={{
+              value: this.state.reports.preparing,
+              animated: true,
+              backgroundColor: COLOR.paperIndigoA400.color
+            }}
+            >
+            <Icon name="md-time" size={22} style={{ margin: 16 }} />
+          </IconToggle>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this.updateFilterOrderStatus.bind(this, 'progress') }>
-          <View style={[pstyles.actionBtn, progress ? pstyles.activeBorder : {}]}>
-            <Icon name="md-bicycle" size={30} />
-          </View>
+        <TouchableOpacity
+          style={[pstyles.actionBtn, progress ? pstyles.activeBorder : {}]}
+          onPress={this.updateFilterOrderStatus.bind(this, 'progress') }>
+          <IconToggle
+            color={'paperRed'}
+            badge={{
+              value: this.state.reports.progress,
+              animated: true,
+              backgroundColor: COLOR.paperPurple400.color
+            }}
+            >
+            <Icon name="md-bicycle" size={22} style={{ margin: 16 }} />
+          </IconToggle>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this.updateFilterOrderStatus.bind(this, 'delivered') }>
-          <View style={[pstyles.actionBtn, delivered ? pstyles.activeBorder : {}]}>
-            <Icon name="md-checkmark-circle-outline" size={30} />
-          </View>
+        <TouchableOpacity
+          style={[pstyles.actionBtn, delivered ? pstyles.activeBorder : {}]}
+          onPress={this.updateFilterOrderStatus.bind(this, 'delivered') }>
+          <IconToggle
+            color={'paperRed'}
+            badge={{
+              value: this.state.reports.delivered,
+              animated: true,
+              backgroundColor: COLOR.paperGreenA700.color
+            }}
+            >
+            <Icon name="md-checkmark-circle-outline" size={22} style={{ margin: 16 }} />
+          </IconToggle>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this.updateFilterOrderStatus.bind(this, 'cancelled') }>
-          <View style={[pstyles.actionBtn, cancelled ? pstyles.activeBorder : {}]}>
-            <Icon name="md-close-circle" size={30} />
-          </View>
+        <TouchableOpacity
+          style={[pstyles.actionBtn, cancelled ? pstyles.activeBorder : {}]}
+          onPress={this.updateFilterOrderStatus.bind(this, 'cancelled') }>
+          <IconToggle
+            color={'paperRed'}
+            badge={{
+              value: this.state.reports.cancelled,
+              animated: true,
+            }}
+            >
+            <Icon name="md-close-circle" size={22} style={{ margin: 16 }} />
+          </IconToggle>
         </TouchableOpacity>
       </View>
     );
@@ -332,6 +386,18 @@ export default class OrderList extends Component {
       searchModel: sm
     });
   }
+
+  loadReports() {
+    this.reportService.fetchOrderReports()
+      .then(x => {
+        this.setState({
+          reports: x
+        });
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
 }
 
 
@@ -344,15 +410,14 @@ const pstyles = StyleSheet.create({
     marginBottom: 8
   },
   actionBtn: {
-    height: 40,
-    width: 40,
-    flex: 1,
+    height: 50,
+    width: 50,
     alignItems: 'center',
     justifyContent: 'center'
   },
   activeBorder: {
     backgroundColor: COLOR.paperAmber300.color,
-    borderRadius: 30
+    borderRadius: 30,
   },
   activeColor: {
     color: COLOR.paperGrey50.color,
