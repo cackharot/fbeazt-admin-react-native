@@ -17,14 +17,16 @@ export default {
     component: require('./components/order-details').default,
   },
   store: {
+    initialRoute: false,
     title: 'Stores',
     menu: true,
-    icon: 'store'
+    icon: 'store',
+    component: require('./components/store-list').default,
   },
-  Dishes: {
+  dishes: {
     title: 'Dishes',
     menu: true,
-    icon: 'cake'
+    icon: 'cake',
   },
   popular: {
     title: 'Popular Dishes',
