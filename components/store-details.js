@@ -68,7 +68,6 @@ export default class StoreDetailsView extends Component {
       .then(x => {
         // console.log(x);
         this.setState({
-          isLoading: false,
           store: x
         })
         return x._id.$oid;
@@ -82,6 +81,9 @@ export default class StoreDetailsView extends Component {
         this.setState({
           dishes: x.items
         })
+      })
+      .done(() => {
+        this.setState({ isLoading: false });
       });
   }
 
@@ -92,14 +94,14 @@ export default class StoreDetailsView extends Component {
         style={[styles.centering, { height: 80 }]}
         size="large"
         />) : (<View/>);
-    let {store, dishes} = this.state;
+    let {isLoading, store, dishes} = this.state;
     return (
       <ScrollView style={{ flex: 1 }}>
-        {spinner}
         {store &&
           this.buildStoreHeading(store)
         }
-        {dishes &&
+        {spinner}
+        {!isLoading && dishes &&
           <StoreDishesList dishes={dishes}/>
         }
       </ScrollView>
@@ -119,7 +121,7 @@ export default class StoreDetailsView extends Component {
     let isNonVeg = store.food_type.indexOf('non-veg') > -1;
     return (
       <Card>
-        <Card.Media image={this.getStoreImage(store)} overlay>
+        <Card.Media image={this.getStoreImage(store) } overlay>
           <Avatar icon="restaurant"
             color={COLOR.paperGrey50.color}
             backgroundColor={isNonVeg ? COLOR.paperRed700.color : COLOR.paperGreen700.color}/>

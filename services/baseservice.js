@@ -6,6 +6,7 @@ import {GoogleSignin} from 'react-native-google-signin';
 export class BaseService {
   constructor() {
     var user = GoogleSignin.currentUser();
+    this.user = user;
     this.idToken = null;
     this.headers = new Headers({
       'Accept': 'application/json',

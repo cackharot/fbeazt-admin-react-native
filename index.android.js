@@ -59,7 +59,7 @@ class FbeaztAdmin extends Component {
   }
 
   fakeUser() {
-    return false ? null : {
+    return true ? null : {
       name: 'Test',
       email: 'test@Foodbeazt.in',
     };
@@ -91,20 +91,8 @@ class FbeaztAdmin extends Component {
     this.setState({
       user: user
     })
-    let that = this;
-    AsyncStorage.getItem(DEVICE_TOKEN_KEY)
-      .then((token) => {
-        console.info('Device token: ' + token)
-        if (!token) {
-          that._configurePushNotification(user);
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      })
-      .done(() => {
-        ToastAndroid.show('Sigin success!', ToastAndroid.SHORT);
-      });
+    this._configurePushNotification();
+    ToastAndroid.show('Sigin success!', ToastAndroid.SHORT);
   }
 
   _loginFailure(errorMessage) {
@@ -171,16 +159,17 @@ class FbeaztAdmin extends Component {
 
   _configurePushNotification() {
     let that = this;
+    console.log('Configuring PUSH notification');
     PushNotification.configure({
       // (optional) Called when Token is generated (iOS and Android)
       onRegister: function (token) {
-        console.log('TOKEN:', token);
+        console.log('GCM TOKEN:', token);
         InteractionManager.runAfterInteractions(() => {
           let service = new PushNotificationService();
           service.register(token)
             .catch((e) => {
               console.error(e);
-            });;
+            });
           AsyncStorage.setItem(DEVICE_TOKEN_KEY, token['token']);
         });
       },
@@ -208,18 +197,19 @@ class FbeaztAdmin extends Component {
   }
 
   _tryNavigateOnNotification(notification) {
+    console.log('**********Navigating*********', notification.order_id, notification.order_no);
     if (notification.order_id && notification.order_no.length > 0) {
       const { navigator } = this.state;
       const { order_no, order_id } = notification;
       let name = '#' + order_no + ' Details';
-      navigator.forward('orderdetails', name, { order_id: order_id });
+      navigator.to('orderdetails', name, { order_id: order_id });
     }
   }
 
   _showLocalNotification(notification) {
     let msg = notification.message;
     let title = notification.title;
-    PushNotification.localNotification({
+    PushNotification.localNotification(Object.assign({
       id: 0,
       title: title,
       autoCancel: true,
@@ -232,7 +222,7 @@ class FbeaztAdmin extends Component {
       message: msg,
       playSound: true,
       number: 1
-    });
+    }, notification));
   }
 }
 

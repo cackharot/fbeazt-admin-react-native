@@ -22,16 +22,31 @@ export default {
     menu: true,
     icon: 'store',
     component: require('./components/store-list').default,
+    children: {
+      storedetails: {
+        component: require('./components/store-details').default
+      }
+    }
   },
-  dishes: {
-    title: 'Dishes',
+  payments: {
+    title: 'Online payments',
     menu: true,
-    icon: 'cake',
+    icon: 'attach-money',
   },
   popular: {
     title: 'Popular Dishes',
     menu: true,
     icon: 'stars'
+  },
+  pincode: {
+    title: 'Pincode',
+    menu: true,
+    icon: 'room'
+  },
+  sms: {
+    title: 'SMS',
+    menu: true,
+    icon: 'message'
   },
   signout: {
     title: 'Sign Out',
