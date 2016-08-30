@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "fbeaztAdmin.app"
-               BlueprintName = "fbeaztAdmin"
-               ReferencedContainer = "container:fbeaztAdmin.xcodeproj">
+               BuildableName = "fbeaztadmin.app"
+               BlueprintName = "fbeaztadmin"
+               ReferencedContainer = "container:fbeaztadmin.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "fbeaztAdminTests.xctest"
-               BlueprintName = "fbeaztAdminTests"
-               ReferencedContainer = "container:fbeaztAdmin.xcodeproj">
+               BuildableName = "fbeaztadminTests.xctest"
+               BlueprintName = "fbeaztadminTests"
+               ReferencedContainer = "container:fbeaztadmin.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,9 +47,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "fbeaztAdminTests.xctest"
-               BlueprintName = "fbeaztAdminTests"
-               ReferencedContainer = "container:fbeaztAdmin.xcodeproj">
+               BuildableName = "fbeaztadminTests.xctest"
+               BlueprintName = "fbeaztadminTests"
+               ReferencedContainer = "container:fbeaztadmin.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -57,9 +57,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "fbeaztAdmin.app"
-            BlueprintName = "fbeaztAdmin"
-            ReferencedContainer = "container:fbeaztAdmin.xcodeproj">
+            BuildableName = "fbeaztadmin.app"
+            BlueprintName = "fbeaztadmin"
+            ReferencedContainer = "container:fbeaztadmin.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -77,9 +77,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "fbeaztAdmin.app"
-            BlueprintName = "fbeaztAdmin"
-            ReferencedContainer = "container:fbeaztAdmin.xcodeproj">
+            BuildableName = "fbeaztadmin.app"
+            BlueprintName = "fbeaztadmin"
+            ReferencedContainer = "container:fbeaztadmin.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -96,9 +96,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "fbeaztAdmin.app"
-            BlueprintName = "fbeaztAdmin"
-            ReferencedContainer = "container:fbeaztAdmin.xcodeproj">
+            BuildableName = "fbeaztadmin.app"
+            BlueprintName = "fbeaztadmin"
+            ReferencedContainer = "container:fbeaztadmin.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

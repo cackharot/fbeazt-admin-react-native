@@ -16,11 +16,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React Native!"
 
-@interface fbeaztAdminTests : XCTestCase
+@interface fbeaztadminTests : XCTestCase
 
 @end
 
-@implementation fbeaztAdminTests
+@implementation fbeaztadminTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL(^)(UIView *view))test
 {

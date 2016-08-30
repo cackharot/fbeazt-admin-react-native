@@ -226,4 +226,4 @@ class FbeaztAdmin extends Component {
   }
 }
 
-AppRegistry.registerComponent('fbeaztAdmin', () => FbeaztAdmin);
+AppRegistry.registerComponent('fbeaztadmin', () => FbeaztAdmin);
