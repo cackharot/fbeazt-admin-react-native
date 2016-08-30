@@ -33,7 +33,7 @@ export class StoreDishesList extends Component {
     return categories;
   }
 
-  getUnique(data: any[]) {
+  getUnique(data) {
     let unique = {};
     let distinct = [];
     data.forEach(function (x) {
@@ -75,13 +75,13 @@ export class StoreDishesList extends Component {
                       primaryText={dish.name}
                       secondaryText={dish.description || 'no desc'}
                       primaryColor={'#002b36'}
-                      captionText={'Rs.' + dish.sell_price}
+                      captionText={dish.getPriceList() }
                       captionStyle={[TYPO.paperFontSubhead, COLOR.paperTeal600]}
-                      leftAvatar={this.getDishImage(dish)}
+                      leftAvatar={this.getDishImage(dish) }
                       rightIcon={<Avatar icon="local-cafe"
                         color={COLOR.paperGrey50.color}
                         size={30}
-                        backgroundColor={dish.food_type.indexOf('non-veg') > -1 ? COLOR.paperRed700.color : COLOR.paperGreen700.color}/>}
+                        backgroundColor={dish.isNonVeg() ? COLOR.paperRed700.color : COLOR.paperGreen700.color}/>}
                       />
                     <Divider />
                   </TouchableOpacity>
@@ -95,11 +95,12 @@ export class StoreDishesList extends Component {
     );
   }
 
-  getDishImage(dish){
-    if(!dish.image_url || dish.image_url.length == 0){
-      return (<Avatar size={50} borderRadius={5} image={<Image source={require('../assets/images/placeholder.png')}/>}/>);
-    }else{
-      return (<Avatar size={50} borderRadius={5} image={<Image source={{uri: Config.BASE_URL + '/static/images/products/' + dish.image_url}}/>}/>);
+  getDishImage(dish) {
+    let image_url = dish.getImage();
+    if (!image_url || image_url.length == 0) {
+      return (<Avatar size={50} borderRadius={5} image={<Image source={require('../assets/images/placeholder.png') }/>}/>);
+    } else {
+      return (<Avatar size={50} borderRadius={5} image={<Image source={{ uri: image_url }}/>}/>);
     }
   }
 

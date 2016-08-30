@@ -109,10 +109,11 @@ export default class StoreDetailsView extends Component {
   }
 
   getStoreImage(item) {
-    if (!item.image_url || item.image_url.length == 0) {
+    let image_url = item.getImage();
+    if (!image_url || image_url.length == 0) {
       return <Image source={require('../assets/images/bg4.png') }/>;
     } else {
-      return <Image source={{ uri: Config.BASE_URL + '/static/images/stores/' + item.image_url }}/>;
+      return <Image source={{ uri: image_url }}/>;
     }
   }
 
@@ -146,10 +147,12 @@ export default class StoreDetailsView extends Component {
             <Icon name="md-locate" /> {store.address}
           </Text>
           <Text style={[TYPO.paperBody, COLOR.paperGrey90]}>
-            <Icon name="md-images" /> {store.holidays.join(', ') }
+            <Icon name="md-images" /> {store.holidays && store.holidays.length > 0 ? store.holidays.join(', ') : 'No holidays'}
           </Text>
           <Text style={[TYPO.paperBody, COLOR.paperGrey90]}>
-            <Icon name="md-time" /> {store.open_time} AM - {store.close_time} PM
+            <Icon name="md-time" /> {store.open_time} AM - {store.close_time} PM {' '}
+             {store.isHoliday() ? (<Text style={[COLOR.googleRed700]}>(holiday)</Text>) : ''}
+             {!store.isHoliday() && (store.isOpen() ? (<Text style={[COLOR.googleGreen700]}>(Open)</Text>) : (<Text style={[COLOR.googleRed700]}>(closed)</Text>))}
           </Text>
           <View style={{ flex: 1, marginTop: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
             {store.cuisines.map((cusine, i) =>

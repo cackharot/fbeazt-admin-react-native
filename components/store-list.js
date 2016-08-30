@@ -151,7 +151,11 @@ export default class StoreList extends Component {
             <Text style={[TYPO.paperSubhead, COLOR.paperLightBlueA700, { textDecorationLine: 'underline' }]}>
               {' ' + store.phone}
             </Text>
-            <Text> {'  '} <Icon name="md-time" /> {store.open_time} AM - {store.close_time} PM</Text>
+            <Text>
+              {'  '} <Icon name="md-time" /> {store.open_time} AM - {store.close_time} PM
+              {store.isHoliday() ? (<Text style={[COLOR.googleRed700]}>(holiday) </Text>) : ''}
+              {!store.isHoliday() && (store.isOpen() ? (<Text style={[COLOR.googleGreen700]}>(Open) </Text>) : (<Text style={[COLOR.googleRed700]}>(closed) </Text>))}
+            </Text>
           </Text>
         )
       },
