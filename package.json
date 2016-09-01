@@ -14,12 +14,14 @@
     "react-native-button": "^1.6.0",
     "react-native-communications": "^2.1.0",
     "react-native-config": "0.0.8",
+    "react-native-drawer": "^2.3.0",
     "react-native-fcm": "^1.0.16",
     "react-native-google-signin": "^0.8.0",
     "react-native-infinite-scroll-view": "^0.4.2",
     "react-native-material-design": "^0.3.7",
     "react-native-material-design-styles": "^0.2.6",
     "react-native-push-notification": "^2.0.2",
+    "react-native-router-flux": "^3.35.0",
     "react-native-vector-icons": "^2.0.3",
     "rn-viewpager": "^1.1.3"
   }

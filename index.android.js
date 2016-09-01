@@ -18,24 +18,25 @@ import {
   ToastAndroid
 } from 'react-native';
 
-import Icon from 'react-native-vector-icons/Ionicons';
+import {Actions, Scene, Modal, Router, ActionConst} from 'react-native-router-flux';
 
+import Icon from 'react-native-vector-icons/Ionicons';
 import Config from 'react-native-config';
 
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 import {Avatar, Drawer, Divider, COLOR, TYPO, Ripple} from 'react-native-material-design';
 
 import {styles} from './app.styles';
+import {AppDrawer} from './AppDrawer';
 
-import {List} from './components/List';
 import {LoginView} from './components/Login';
+import {SignOutView} from './components/signout';
+let OrderListView = require('./components/order-list').default;
+let OrderDetailsView = require('./components/order-details').default;
+let StoreListView = require('./components/store-list').default;
+let StoreDetailsView = require('./components/store-details').default;
 
 import {Toolbar} from './components/Toolbar';
-import {Navigation} from './components/Navigation';
-import {Navigate} from './utils/Navigate';
-
-import {OrderList} from './components/order-list';
-import {OrderDetailsView} from './components/order-details';
 
 import {PushNotificationService} from './services/pushservice';
 
@@ -44,117 +45,78 @@ let DEVICE_TOKEN_KEY = 'deviceToken';
 var PushNotification = require('react-native-push-notification');
 
 class FbeaztAdmin extends Component {
-  static childContextTypes = {
-    drawer: React.PropTypes.object,
-    navigator: React.PropTypes.object
-  };
-
   constructor(props) {
     super(props);
     this.state = {
-      user: this.fakeUser(),
-      drawer: null,
-      navigator: null,
-    };
-  }
-
-  fakeUser() {
-    return true ? null : {
-      name: 'Test',
-      email: 'test@Foodbeazt.in',
-    };
-  }
-
-  getChildContext = () => {
-    return {
-      drawer: this.state.drawer,
-      navigator: this.state.navigator
-    }
-  };
-
-  setDrawer = (drawer) => {
-    this.setState({
-      drawer
-    });
-  };
-
-  setNavigator = (navigator) => {
-    this.setState({
-      navigator: new Navigate(navigator)
-    });
-  };
-
-  componentDidMount() {
-  }
-
-  _loginSuccess(user) {
-    this.setState({
-      user: user
-    })
-    this._configurePushNotification();
-    ToastAndroid.show('Sigin success!', ToastAndroid.SHORT);
-  }
-
-  _loginFailure(errorMessage) {
-    this.setState({
-      user: null
-    })
-    if (errorMessage && errorMessage !== 'Not logged in!') {
-      ToastAndroid.show('Sigin Error!\n' + errorMessage, ToastAndroid.SHORT);
+      icons: null
     }
   }
+  componentWillMount() {
+    this.preloadImages();
+  }
+
+  async preloadImages() {
+    const images = await Promise.all([
+      // Icon.getImageSource('md-arrow-back', 20, 'white'),
+      Icon.getImageSource('ios-arrow-back-outline', 20, 'white'),
+      Icon.getImageSource('ios-menu-outline', 15, 'white'),
+      Icon.getImageSource('ios-cart-outline', 20, 'white')
+    ]);
+    this.setState({
+      icons: {
+        backIcon: images[0],
+        burgerIcon: images[1],
+        cart: images[2]
+      }
+    });
+  }
+
+  renderMenuButton() {
+    return (
+      <TouchableOpacity style={{ paddingLeft: 15, flex: 1, alignItems: 'flex-start', justifyContent: 'center' }} onPress={() => { Actions.get('drawer').ref.toggle() } }>
+        <Icon name="ios-menu-outline" size={30} color="white"/>
+      </TouchableOpacity>
+    );
+  };
 
   render() {
-    if (!this.state.user) {
-      return (
-        <LoginView title="Foodbeazt Admin"
-          onSuccess={this._loginSuccess.bind(this) }
-          onFailure={this._loginFailure.bind(this) }
-          />
-      );
+    let {icons} = this.state;
+    if (!icons) {
+      return null;
     }
-    if (this.state.user) {
-      const { drawer, navigator } = this.state;
-      const navView = React.createElement(Navigation);
-      return (
-        <DrawerLayoutAndroid
-          drawerWidth={300}
-          ref={(drawer) => { !this.state.drawer ? this.setDrawer(drawer) : null } }
-          drawerPosition={DrawerLayoutAndroid.positions.Left}
-          renderNavigationView={() => {
-            if (drawer && navigator) {
-              return navView;
-            }
-            return null;
-          } }>
-          <StatusBar
-            backgroundColor={COLOR.paperPink400.color}
-            barStyle="light-content"
-            />
-          {drawer &&
-            <Navigator
-              initialRoute={Navigate.getInitialRoute() }
-              navigationBar={<Toolbar onIconPress={drawer.openDrawer} />}
-              configureScene={() => {
-                return Navigator.SceneConfigs.FadeAndroid;
-              } }
-              ref={(navigator) => { !this.state.navigator ? this.setNavigator(navigator) : null } }
-              renderScene={(route) => {
-                if (this.state.navigator && route.component) {
-                  return (
-                    <View
-                      style={styles.scene}
-                      showsVerticalScrollIndicator={false}>
-                      <route.component title={route.title} path={route.path} {...route.props} />
-                    </View>
-                  );
-                }
-              } }
-              />
-          }
-        </DrawerLayoutAndroid>
-      );
-    }
+
+    const scenes = Actions.create(
+      <Scene key="modal" component={Modal}>
+        <Scene key="root"
+          hideNavBar hideTabBar type={ActionConst.RESET}>
+          <Scene key="login" component={LoginView}
+            onSuccess={this._configurePushNotification.bind(this) }
+            title="Foodbeazt Admin"  hideNavBar hideTabBar initial type={ActionConst.RESET}/>
+          <Scene key="logout" component={SignOutView}
+            title="Sign Out"  hideNavBar hideTabBar type={ActionConst.RESET}/>
+          <Scene key="drawer" component={AppDrawer} hideNavBar={false} hideTabBar={false}>
+            <Scene key="main" type={ActionConst.RESET}>
+              <Scene key="orderList"
+                title="Orders" component={OrderListView} type={ActionConst.RESET}/>
+              <Scene key="orderDetails" title="Orders details" component={OrderDetailsView}/>
+              <Scene key="storeList" title="Restaurants" component={StoreListView}  type={ActionConst.RESET}/>
+              <Scene key="storeDetails" title="Store Details" component={StoreDetailsView} />
+            </Scene>
+          </Scene>
+        </Scene>
+      </Scene>
+    );
+    // </Scene>
+
+    return (
+      <Router scenes={scenes} title="Foodbeazt"
+        leftButton={this.renderMenuButton}
+        backButtonImage={icons.backIcon}
+        navigationBarStyle={{ backgroundColor: COLOR.paperPink400.color }}
+        titleStyle={[COLOR.paperGrey50]}
+        sceneStyle={{ flex: 1, backgroundColor: '#F7F7F7' }}>
+      </Router>
+    );
   }
 
   _configurePushNotification() {
@@ -175,7 +137,7 @@ class FbeaztAdmin extends Component {
       },
       // (required) Called when a remote or local notification is opened or received
       onNotification: function (notification) {
-        console.log('NOTIFICATION:', notification);
+        console.log('RECEIVED NOTIFICATION:', notification);
         if (notification.foreground === true && notification.userInteraction === false && notification['google.message_id']) {
           that._showLocalNotification(notification);
         }
@@ -199,10 +161,9 @@ class FbeaztAdmin extends Component {
   _tryNavigateOnNotification(notification) {
     console.log('**********Navigating*********', notification.order_id, notification.order_no);
     if (notification.order_id && notification.order_no.length > 0) {
-      const { navigator } = this.state;
       const { order_no, order_id } = notification;
       let name = '#' + order_no + ' Details';
-      navigator.to('orderdetails', name, { order_id: order_id });
+      Actions.orderDetails({ title: name, order_id: order_id });
     }
   }
 

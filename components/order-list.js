@@ -45,12 +45,9 @@ import {OrderDetailsView} from './order-details';
 import { OrderHelper, Orderstatus } from '../utils/OrderHelper';
 import { DateHelper } from '../utils/DateHelper';
 
-export default class OrderList extends Component {
-  static contextTypes = {
-    drawer: PropTypes.object.isRequired,
-    navigator: PropTypes.object.isRequired
-  };
+import {Actions} from 'react-native-router-flux';
 
+export default class OrderList extends Component {
   constructor(props) {
     super(props);
     this.ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1._id.$oid !== r2._id.$oid });
@@ -160,15 +157,13 @@ export default class OrderList extends Component {
   }
 
   rowPressed(order_id) {
-    const { navigator } = this.context;
     let selectedOrder = this._orders.filter(x => x._id.$oid === order_id.$oid)[0];
     let name = '#' + selectedOrder.order_no + ' Details';
-    navigator.forward('orderdetails', name, { order_id: selectedOrder._id.$oid });
+    Actions.orderDetails({ title: name, order_id: selectedOrder._id.$oid });
   }
 
   renderRow(order, sectionID, rowID) {
     var totalItemQty = order.items.reduce((i, x) => i + x.quantity, 0);
-    // let dateStr = OrderHelper.formatDate(new Date(order.created_at.$date));
     let dateStr = DateHelper.time_ago(new Date(order.created_at.$date));
     var moreMsg = [
       {
@@ -222,7 +217,7 @@ export default class OrderList extends Component {
         size="large"
         />) : (<View/>);
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, marginTop: 50 }}>
         {
           this.getFilterView()
         }

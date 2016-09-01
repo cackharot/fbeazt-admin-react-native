@@ -27,6 +27,7 @@ import {
   , TYPO
 } from 'react-native-material-design';
 
+import {Actions, ActionConst} from 'react-native-router-flux';
 import Config from 'react-native-config';
 
 import { List } from './List';
@@ -40,12 +41,11 @@ let DEVICE_TOKEN_KEY = 'deviceToken';
 export class LoginView extends Component {
   static propTypes = {
     title: React.PropTypes.string.isRequired,
-    onSuccess: React.PropTypes.func.isRequired,
-    onFailure: React.PropTypes.func.isRequired,
+    onSuccess: React.PropTypes.func.isRequired
   };
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       isOnline: false,
       isLoading: true
@@ -141,19 +141,25 @@ export class LoginView extends Component {
     return null;
   }
 
+  onLoginSuccess(user) {
+    if (this.props.onSuccess) {
+      this.props.onSuccess(user);
+    }
+  }
+
   _signIn() {
     this.setState({ isLoading: true });
     InteractionManager.runAfterInteractions(() => {
       GoogleSignin.signIn()
         .then((user) => {
           console.log('Sigin success!');
-          console.log(user);
-          this.props.onSuccess(user);
+          console.info('Logged in user: ' + user.email);
+          this.onLoginSuccess(user);
+          Actions.drawer({ type: ActionConst.RESET });
         })
         .catch((err) => {
           this.setState({ isLoading: false });
-          console.log('WRONG SIGNIN', err);
-          this.props.onFailure(err.message);
+          console.log('Sigin Error', err);
         })
         .done();
     });
@@ -171,10 +177,9 @@ export class LoginView extends Component {
       if (isConnected) {
         let user = await this._setupGoogleSignin();
         this.setState({ isLoading: false });
-        if (user) {
-          this.props.onSuccess(user);
-        } else {
-          this.props.onFailure(null);
+        if (user && user.email) {
+          this.onLoginSuccess(user);
+          Actions.drawer({ type: ActionConst.RESET });
         }
       }
     } catch (e) {

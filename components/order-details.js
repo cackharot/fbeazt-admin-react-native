@@ -81,7 +81,7 @@ export default class OrderDetailsView extends Component {
         />) : (<View/>);
     let order = this.state.order;
     return (
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1, marginTop: 50  }}>
         {spinner}
         {order &&
           <OrderHeading order={order} />

@@ -1,3 +1,5 @@
+import {Actions} from 'react-native-router-flux';
+
 export default {
   welcome: {
     initialRoute: true,
@@ -9,7 +11,8 @@ export default {
       orderdetails: {
         component: require('./components/order-details').default
       }
-    }
+    },
+    onPress: () => Actions.orderList(),
   },
   orderdetails: {
     title: 'Order details',
@@ -26,7 +29,8 @@ export default {
       storedetails: {
         component: require('./components/store-details').default
       }
-    }
+    },
+    onPress: () => Actions.storeList(),
   },
   payments: {
     title: 'Online payments',

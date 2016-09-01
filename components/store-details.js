@@ -96,7 +96,7 @@ export default class StoreDetailsView extends Component {
         />) : (<View/>);
     let {isLoading, store, dishes} = this.state;
     return (
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1, marginTop: 50  }}>
         {store &&
           this.buildStoreHeading(store)
         }

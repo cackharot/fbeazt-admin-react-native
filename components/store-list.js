@@ -30,7 +30,6 @@ import {
   , COLOR
 } from 'react-native-material-design';
 
-import Config from 'react-native-config';
 import * as _ from 'lodash';
 import Communications from 'react-native-communications';
 
@@ -42,13 +41,9 @@ import { styles } from '../app.styles';
 
 import {StoreService} from '../services/storeservice';
 import { DateHelper } from '../utils/DateHelper';
+import {Actions} from 'react-native-router-flux';
 
 export default class StoreList extends Component {
-  static contextTypes = {
-    drawer: PropTypes.object.isRequired,
-    navigator: PropTypes.object.isRequired
-  };
-
   constructor(props) {
     super(props);
     this.ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1._id.$oid !== r2._id.$oid });
@@ -133,10 +128,9 @@ export default class StoreList extends Component {
   }
 
   rowPressed(store_id) {
-    const { navigator } = this.context;
     let selectedStore = this._stores.filter(x => x._id.$oid === store_id)[0];
     let name = selectedStore.name + ' Details';
-    navigator.forward('storedetails', name, { store_id: selectedStore._id.$oid });
+    Actions.storeDetails({ title: name, store_id: selectedStore._id.$oid });
   }
 
   renderRow(store, sectionID, rowID) {
@@ -154,7 +148,7 @@ export default class StoreList extends Component {
             <Text>
               {'  '} <Icon name="md-time" /> {store.open_time} AM - {store.close_time} PM
               {store.isHoliday() ? (<Text style={[COLOR.googleRed700]}>(holiday) </Text>) : ''}
-              {!store.isHoliday() && (store.isOpen() ? (<Text style={[COLOR.googleGreen700]}>(Open) </Text>) : (<Text style={[COLOR.googleRed700]}>(closed) </Text>))}
+              {!store.isHoliday() && (store.isOpen() ? (<Text style={[COLOR.googleGreen700]}>(Open) </Text>) : (<Text style={[COLOR.googleRed700]}>(closed) </Text>)) }
             </Text>
           </Text>
         )
@@ -187,31 +181,18 @@ export default class StoreList extends Component {
   }
 
   getStoreImage(item) {
-    if (!item.image_url || item.image_url.length == 0) {
+    let image_url = item.getImage();
+    if (!image_url || image_url.length == 0) {
       return (<Avatar size={50} borderRadius={5} image={<Image source={require('../assets/images/placeholder.png') }/>}/>);
     } else {
-      return (<Avatar size={50} borderRadius={5} image={<Image source={{ uri: Config.BASE_URL + '/static/images/stores/' + item.image_url }}/>}/>);
+      return (<Avatar size={50} borderRadius={5} image={<Image source={{ uri: image_url }}/>}/>);
     }
   }
 
-  // rightIcon={
-  //   <View style={{
-  //     backgroundColor: COLOR.paperGreen700.color,
-  //     alignItems: 'center',
-  //     justifyContent: 'center',
-  //     width: 46,
-  //     height: 46,
-  //     borderRadius: 23
-  //   }}>
-  //     <Icon
-  //       name="md-list-box"
-  //       color={COLOR.paperGrey50.color} size={24}/>
-  //   </View>
-  // }
   render() {
     let {stores, isLoading} = this.state;
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, marginTop: 50 }}>
         {
           this.getFilterView()
         }

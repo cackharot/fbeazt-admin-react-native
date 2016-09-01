@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { View, Text, Image  } from 'react-native';
-
+import {Actions} from 'react-native-router-flux';
 import { Avatar, Drawer, Divider, COLOR, TYPO } from 'react-native-material-design';
 
 import {GoogleSignin} from 'react-native-google-signin';
@@ -8,15 +8,11 @@ import {GoogleSignin} from 'react-native-google-signin';
 let routes = require('../app.routes').default;
 
 export class Navigation extends Component {
-  static contextTypes = {
-    drawer: PropTypes.object.isRequired,
-    navigator: PropTypes.object.isRequired
-  };
+  static contextTypes = { drawer: React.PropTypes.object }
 
   constructor(props) {
     super(props);
     this.state = {
-      route: null,
       user: null
     }
   }
@@ -25,15 +21,6 @@ export class Navigation extends Component {
     let user = GoogleSignin.currentUser();
     this.setState({ user });
   }
-
-  changeScene = (path, name) => {
-    const { drawer, navigator } = this.context;
-    this.setState({
-      route: path
-    });
-    navigator.to(path, name);
-    drawer.closeDrawer();
-  };
 
   render() {
     const { route, user } = this.state;
@@ -51,8 +38,12 @@ export class Navigation extends Component {
         value: item.title,
         // label: ' ',
         active: route === key,
-        onPress: () => this.changeScene(key),
-        onLongPress: () => this.changeScene(key)
+        onPress: () => {
+          this.context.drawer.close();
+          if (item.onPress) {
+            item.onPress();
+          }
+        },
       });
     }
 

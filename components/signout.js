@@ -27,18 +27,12 @@ import {styles} from '../app.styles';
 
 let DEVICE_TOKEN_KEY = 'deviceToken';
 
-export default class SignOutView extends Component {
-  static contextTypes = {
-    drawer: PropTypes.object.isRequired,
-    navigator: PropTypes.object.isRequired
-  };
-
+export class SignOutView extends Component {
   componentDidMount() {
     this._signOut();
   }
 
   _signOut() {
-    let {navigator} = this.context;
     GoogleSignin.revokeAccess()
       .then(() => GoogleSignin.signOut())
       .then(() => {
