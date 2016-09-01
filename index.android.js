@@ -119,21 +119,26 @@ class FbeaztAdmin extends Component {
     );
   }
 
-  _configurePushNotification() {
+  async _configurePushNotification() {
     let that = this;
     console.log('Configuring PUSH notification');
+    let prevToken = await AsyncStorage.getItem(DEVICE_TOKEN_KEY);
+    console.log('prevToken', prevToken);
+
     PushNotification.configure({
       // (optional) Called when Token is generated (iOS and Android)
       onRegister: function (token) {
         console.log('GCM TOKEN:', token);
-        InteractionManager.runAfterInteractions(() => {
-          let service = new PushNotificationService();
-          service.register(token)
-            .catch((e) => {
-              console.error(e);
-            });
-          AsyncStorage.setItem(DEVICE_TOKEN_KEY, token['token']);
-        });
+        if (token['token'] !== prevToken) {
+          InteractionManager.runAfterInteractions(() => {
+            let service = new PushNotificationService();
+            service.register(token)
+              .catch((e) => {
+                console.error(e);
+              });
+            AsyncStorage.setItem(DEVICE_TOKEN_KEY, token['token']);
+          });
+        }
       },
       // (required) Called when a remote or local notification is opened or received
       onNotification: function (notification) {
@@ -182,7 +187,8 @@ class FbeaztAdmin extends Component {
       vibration: 300,
       message: msg,
       playSound: true,
-      number: 1
+      number: 1,
+      collapse_key: null
     }, notification));
   }
 }

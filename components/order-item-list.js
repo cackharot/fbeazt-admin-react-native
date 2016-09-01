@@ -72,41 +72,25 @@ export class OrderItemList extends Component {
             indicator={this._renderTitleIndicator(order.items, stores) }>
             {stores.map((store, i) => (
               <View key={i} style={pstyles.pageStyle}>
-                {this.getItems(order.items, store._id.$oid).map((dish, i) => (
-                  <TouchableOpacity key={i}>
-                    <List
-                      style={{}}
-                      primaryText={dish.name}
-                      secondaryText={(dish.price_detail && dish.price_detail.description ? dish.price_detail.description + ' - ' : '') + dish.category}
-                      captionText={'Rs.' + this.getItemPrice(dish).toString() }
-                      captionStyle={[TYPO.paperFontSubhead, COLOR.paperBlueGrey900]}
-                      rightIcon={<Text>Qty: {dish.quantity.toString() }</Text>}
-                      />
-                    <Divider />
-                  </TouchableOpacity>
-                )) }
-                <List
-                  primaryText={'Item Count/Quantity'}
-                  captionText={this.getItems(order.items, store._id.$oid).length + '/' + this.getItems(order.items, store._id.$oid).reduce((i, x) => i + x.quantity, 0) }
-                  style={pstyles.compact}
-                  captionStyle={[TYPO.paperFontSubhead, COLOR.paperTeal800]}
-                  />
-                <List
-                  primaryText={'Store Total'}
-                  captionText={'Rs.' + (this.getItems(order.items, store._id.$oid).reduce((i, x) => i + this.getItemPrice(x), 0)) }
-                  style={pstyles.compact}
-                  captionStyle={[TYPO.paperFontSubhead, COLOR.paperCyan800]}
-                  />
-                <Divider />
+                {this._renderItems(this.getItems(order.items, store._id.$oid)) }
+                {this._renderStoreFooter(order, store) }
               </View>
             )) }
           </IndicatorViewPager>
         }
-        {stores.length <= 1 &&
-          order.items.map((dish, i) => (
+        {stores.length <= 1 && this._renderItems(order.items) }
+        {this._renderFooter(order) }
+      </View>
+    );
+  }
+
+  _renderItems(items) {
+    return (
+      <View>
+        {items &&
+          items.map((dish, i) => (
             <TouchableOpacity key={i}>
               <List
-                style={{}}
                 primaryText={dish.name}
                 secondaryText={(dish.price_detail && dish.price_detail.description ? dish.price_detail.description + ' - ' : '') + dish.category}
                 captionText={'Rs.' + this.getItemPrice(dish).toString() }
@@ -115,25 +99,54 @@ export class OrderItemList extends Component {
                 />
               <Divider />
             </TouchableOpacity>
-          )) }
+          ))
+        }
+      </View>
+    );
+  }
+
+  _renderFooter(order) {
+    return (
+      <View>
         <List
           primaryText={'Sub Total'}
           captionText={'Rs.' + (order.total - order.delivery_charges) }
-          style={pstyles.compact}
+          // style={pstyles.compact}
           captionStyle={[TYPO.paperFontSubhead, COLOR.paperDeepOrange900]}
           />
         <List
           primaryText={'Delivery charges'}
           captionText={'Rs.' + order.delivery_charges}
-          style={pstyles.compact}
+          // style={pstyles.compact}
           captionStyle={[TYPO.paperFontSubhead, COLOR.paperBlueGrey700]}
           />
         <List
           primaryText={'Total'}
           captionText={'Rs.' + order.total}
-          style={pstyles.compact}
+          // style={pstyles.compact}
           captionStyle={[TYPO.paperFontTitle, COLOR.paperPink500]}
           />
+      </View>
+    );
+  }
+
+  _renderStoreFooter(order, store) {
+    let items = this.getItems(order.items, store._id.$oid);
+    return (
+      <View>
+        <List
+          primaryText={'Item Count/Quantity'}
+          captionText={items.length + '/' + items.reduce((i, x) => i + x.quantity, 0) }
+          // style={[pstyles.compact]}
+          captionStyle={[TYPO.paperFontSubhead, COLOR.paperTeal800]}
+          />
+        <List
+          primaryText={'Store Total'}
+          captionText={'Rs.' + (items.reduce((i, x) => i + this.getItemPrice(x), 0)) }
+          // style={[pstyles.compact]}
+          captionStyle={[TYPO.paperFontSubhead, COLOR.paperCyan800]}
+          />
+        <Divider />
       </View>
     );
   }

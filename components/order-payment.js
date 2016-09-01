@@ -39,12 +39,12 @@ export class OrderPayment extends Component {
         <List
           primaryText={'Mode'}
           captionText={order.payment_type.toUpperCase() }
-          style={pstyles.compact}
+          // style={pstyles.compact}
           />
         <List
           primaryText={'Status'}
           captionText={order.payment_status.toUpperCase() }
-          style={pstyles.compact}
+          // style={pstyles.compact}
           />
         <Divider />
       </View>
