@@ -55,6 +55,10 @@ export class Restaurant {
   }
 
   isHoliday() {
+    if(!this.holidays || this.holidays.length == 0){
+      console.warn("no holidays defined");
+      return false;
+    }
     let hs = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
     let weekday = hs[moment().weekday() - 1];
     return this.holidays.some(x => x.toLocaleLowerCase().localeCompare(weekday) === 0);
