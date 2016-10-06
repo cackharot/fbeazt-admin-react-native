@@ -30,7 +30,7 @@ import {styles} from './app.styles';
 import {AppDrawer} from './AppDrawer';
 
 import {LoginView} from './components/Login';
-import {SignOutView} from './components/signout';
+let SignOutView = require('./components/signout').default;
 let OrderListView = require('./components/order-list').default;
 let OrderDetailsView = require('./components/order-details').default;
 let StoreListView = require('./components/store-list').default;

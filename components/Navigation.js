@@ -40,6 +40,7 @@ export class Navigation extends Component {
         active: route === key,
         onPress: () => {
           this.context.drawer.close();
+          // console.log("Menu press", key);
           if (item.onPress) {
             item.onPress();
           }

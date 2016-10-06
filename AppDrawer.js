@@ -24,12 +24,22 @@ export class AppDrawer extends Component {
     const state = this.props.navigationState;
     const children = state.children;
     const navView = React.createElement(Navigation);
+    if(!children || children.length == 0){
+      console.error("invalid navigation state, no children!!");
+      return;
+    }
     return (
       <Drawer
         ref="navigation"
         open={state.open}
         onOpen={() => Actions.refresh({ key: state.key, open: true }) }
-        onClose={() => Actions.refresh({ key: state.key, open: false }) }
+        onClose={() => {
+          try{
+            Actions.refresh({ key: state.key, open: false });
+          }catch(e){
+            console.log(e);
+          }
+        }}
         type="overlay"
         content={navView}
         tapToClose={true}

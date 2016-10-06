@@ -57,5 +57,6 @@ export default {
     menu: true,
     icon: 'exit-to-app',
     component: require('./components/signout').default,
+    onPress: () => Actions.logout()
   }
 }

@@ -27,15 +27,20 @@ import {styles} from '../app.styles';
 
 let DEVICE_TOKEN_KEY = 'deviceToken';
 
-export class SignOutView extends Component {
+export default class SignOutView extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   componentDidMount() {
-    this._signOut();
+    setTimeout(() => {this._signOut();}, 3000);
   }
 
   _signOut() {
     GoogleSignin.revokeAccess()
       .then(() => GoogleSignin.signOut())
       .then(() => {
+        console.log("Google revoke access done!")
         AsyncStorage.getItem(DEVICE_TOKEN_KEY)
           .then((token) => {
             if (token) {
