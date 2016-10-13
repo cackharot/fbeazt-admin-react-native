@@ -29,7 +29,7 @@ export class OrderPayment extends Component {
     if (!order) {
       return false;
     }
-    if (!order.payment_type) {
+    if (!order.payment_type || !order.payment_status) {
       order.payment_type = 'cod';
       order.payment_status = 'paid';
     }

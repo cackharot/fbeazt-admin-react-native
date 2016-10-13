@@ -56,7 +56,7 @@ export class Restaurant {
 
   isHoliday() {
     if(!this.holidays || this.holidays.length == 0){
-      console.warn("no holidays defined");
+      console.info("no holidays defined");
       return false;
     }
     let hs = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];

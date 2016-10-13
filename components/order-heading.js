@@ -47,6 +47,9 @@ export class OrderHeading extends Component {
     }
     let orderDateStr = DateHelper.formatDate(new Date(order.created_at.$date));
     let {statusIcon, statusColor} = OrderHelper.getStatusIcon(order.status.toUpperCase());
+    if(order.otp_status && order.otp_status != 'VERIFIED') {
+      statusIcon = "info";
+    }
     let totalItemQty = order.items.reduce((i, x) => i + x.quantity, 0);
     return (
       <Card>
@@ -83,8 +86,11 @@ export class OrderHeading extends Component {
             <Icon name="md-compass" /> {order.delivery_details.landmark} - {order.delivery_details.pincode}
           </Text>
           <Text style={[TYPO.paperFontDisplay1, COLOR.paperTeal500]}>
-            {'Rs.' + order.total}
+            {'₹' + order.total}
           </Text>
+          {order.otp_status != 'VERIFIED' &&
+            <Text style={[COLOR.paperRed200]}>OTP not verified!</Text>
+          }
         </Card.Body>
         <Card.Actions position="left">
           <OrderActions order={order} onOrderStatusChanged={(st) => {

@@ -32,7 +32,7 @@ export class OrderItemList extends Component {
     return stores;
   }
 
-  getUnique(data: any[]) {
+  getUnique(data) {
     let unique = {};
     let distinct = [];
     data.forEach(function (x) {
@@ -78,6 +78,7 @@ export class OrderItemList extends Component {
             )) }
           </IndicatorViewPager>
         }
+        {stores.length <= 1 && this._renderStoreTitle(stores[0]) }
         {stores.length <= 1 && this._renderItems(order.items) }
         {this._renderFooter(order) }
       </View>
@@ -93,7 +94,7 @@ export class OrderItemList extends Component {
               <List
                 primaryText={dish.name}
                 secondaryText={(dish.price_detail && dish.price_detail.description ? dish.price_detail.description + ' - ' : '') + dish.category}
-                captionText={'Rs.' + this.getItemPrice(dish).toString() }
+                captionText={this._getCurrencySymbol() + this.getItemPrice(dish).toString() }
                 captionStyle={[TYPO.paperFontSubhead, COLOR.paperBlueGrey900]}
                 rightIcon={<Text>Qty: {dish.quantity.toString() }</Text>}
                 />
@@ -105,24 +106,33 @@ export class OrderItemList extends Component {
     );
   }
 
+  _renderStoreTitle(store) {
+    return (
+      <View>
+        <Subheader style={[TYPO.paperFontSubhead,COLOR.paperTeal800]}
+          text={store.name}/>
+      </View>
+    );
+  }
+
   _renderFooter(order) {
     return (
       <View>
         <List
           primaryText={'Sub Total'}
-          captionText={'Rs.' + (order.total - order.delivery_charges) }
+          captionText={this._getCurrencySymbol() + (order.total - order.delivery_charges) }
           // style={pstyles.compact}
           captionStyle={[TYPO.paperFontSubhead, COLOR.paperDeepOrange900]}
           />
         <List
           primaryText={'Delivery charges'}
-          captionText={'Rs.' + order.delivery_charges}
+          captionText={this._getCurrencySymbol() + order.delivery_charges}
           // style={pstyles.compact}
           captionStyle={[TYPO.paperFontSubhead, COLOR.paperBlueGrey700]}
           />
         <List
           primaryText={'Total'}
-          captionText={'Rs.' + order.total}
+          captionText={this._getCurrencySymbol() + order.total}
           // style={pstyles.compact}
           captionStyle={[TYPO.paperFontTitle, COLOR.paperPink500]}
           />
@@ -142,7 +152,7 @@ export class OrderItemList extends Component {
           />
         <List
           primaryText={'Store Total'}
-          captionText={'Rs.' + (items.reduce((i, x) => i + this.getItemPrice(x), 0)) }
+          captionText={this._getCurrencySymbol() + (items.reduce((i, x) => i + this.getItemPrice(x), 0)) }
           // style={[pstyles.compact]}
           captionStyle={[TYPO.paperFontSubhead, COLOR.paperCyan800]}
           />
@@ -160,6 +170,10 @@ export class OrderItemList extends Component {
       selectedBorderStyle={pstyles.selectedBorderStyle}
       titles={store_names}
       />;
+  }
+
+  _getCurrencySymbol(){
+    return '₹';
   }
 }
 

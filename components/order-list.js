@@ -58,7 +58,7 @@ export default class OrderList extends Component {
       canLoadMoreContent: true,
       searchModel: {
         page_no: 1,
-        page_size: 10,
+        page_size: 25,
         filter_text: '',
         order_status: '',
       },
@@ -136,7 +136,7 @@ export default class OrderList extends Component {
     this.prevUrl = this.state.next;
     try {
       let x = await this.service.getOrders(this.state.next, this.state.searchModel);
-      // console.log('received items', x.items.length, x.total);
+      console.log('received orders items', x.items.length, x.total);
       if (!x || !x.items) {
         this.setState({
           canLoadMoreContent: false,
@@ -146,6 +146,7 @@ export default class OrderList extends Component {
       }
       this.setOrdersState(x, this.state.next === null);
     } catch (e) {
+      console.error("error while loading orders")
       console.error(e);
       this.setState({
         errorMsg: e,
@@ -187,6 +188,9 @@ export default class OrderList extends Component {
       }
     ]
     let {statusIcon, statusColor} = OrderHelper.getStatusIcon(order.status.toUpperCase());
+    if(order.otp_status && order.otp_status != 'VERIFIED') {
+      statusIcon = "info";
+    }
     return (
       <TouchableNativeFeedback key={rowID}
         onPress={() => this.rowPressed(order._id) }
@@ -195,7 +199,7 @@ export default class OrderList extends Component {
           <List
             primaryText={order.order_no}
             secondaryTextMoreLine={moreMsg}
-            captionText={'Rs.' + order.total}
+            captionText={'₹' + order.total}
             primaryColor={'#002b36'}
             lines={4}
             style={{}}

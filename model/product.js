@@ -95,9 +95,9 @@ export class Product {
 
   getPriceList() {
     if (!this.hasPriceTable()) {
-      return 'Rs.' + this.sell_price;
+      return '₹' + this.sell_price;
     }
-    return this.price_table.map(x => 'Rs.' + x.price).join(', ');
+    return '₹' + this.price_table.map(x => x.price).join(', ');
   }
 
   getImage() {

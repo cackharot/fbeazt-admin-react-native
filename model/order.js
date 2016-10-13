@@ -59,7 +59,7 @@ export class Order {
     }
   }
 
-  remove(item: LineItem) {
+  remove(item) {
     let idx = this.items.findIndex(x => x === item);
     if (idx !== -1) {
       this.items.splice(idx, 1);
@@ -95,17 +95,17 @@ export class Order {
     return this.items.filter(x => _.isEqual(x.store_id, store_id));
   }
 
-  getItemQuantity(product_id: ObjectId, price_detail: PriceDetail = null) {
+  getItemQuantity(product_id, price_detail) {
     let item = this.getItemsByProductId(product_id, price_detail);
     return item ? item.quantity : -1;
   }
 
-  getItemPriceTable(product_id: ObjectId, price_detail: PriceDetail = null) {
+  getItemPriceTable(product_id, price_detail) {
     let item = this.getItemsByProductId(product_id, price_detail);
     return item ? item.price_detail : null;
   }
 
-  getItemsByProductId(product_id: ObjectId, price_detail: PriceDetail = null) {
+  getItemsByProductId(product_id, price_detail) {
     let filteredItems = this.items.filter(x => _.isEqual(x.product_id, product_id));
     if (price_detail && price_detail.no > -1 && filteredItems.length > 0) {
       filteredItems = filteredItems.filter(x => _.isEqual(x.price_detail, price_detail));
@@ -182,7 +182,7 @@ export class Order {
     return i.toString();
   }
 
-  private getUnique(data) {
+  getUnique(data) {
     let unique = {};
     let distinct = [];
     data.forEach(function (x) {
