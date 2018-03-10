@@ -93,8 +93,8 @@ android {
         applicationId "com.fbeaztadmin"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.2"
         multiDexEnabled true
         ndk {
             abiFilters "armeabi-v7a", "x86"
@@ -150,12 +150,12 @@ android {
 dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:+"  // From node_modules
-    compile 'com.google.android.gms:play-services-auth:9.6.1'
-    compile 'com.google.android.gms:play-services-gcm:9.6.1'
+    compile "com.facebook.react:react-native:0.34.1"  // From node_modules
+    compile 'com.google.android.gms:play-services-auth:11.0.4'
+    compile 'com.google.android.gms:play-services-gcm:11.0.4'
 
-    compile 'com.google.firebase:firebase-core:9.6.1'
-    compile 'com.google.firebase:firebase-messaging:9.6.1'
+    compile 'com.google.firebase:firebase-core:11.0.4'
+    compile 'com.google.firebase:firebase-messaging:11.0.4'
 
     compile(project(":react-native-google-signin")) {
         exclude group: "com.google.android.gms"
