@@ -78,16 +78,6 @@ export class Order {
     return this.getSubTotal() > 0 && !hasClosedItems;
   }
 
-  isPaymentValid() {
-    if (this.payment_type === 'cod') {
-      return true;
-    }
-    if (this.payment_type === 'payumoney') {
-      return ['success', 'pending', 'failure'].indexOf(this.payment_status) > -1;
-    }
-    return false;
-  }
-
   getItems(store_id = null) {
     if (store_id === null) {
       return this.items;
