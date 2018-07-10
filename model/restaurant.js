@@ -47,7 +47,7 @@ export class Restaurant {
 
   isOpen() {
     let hr = moment().hour() + (moment().minute() / 60);
-    return !this.is_closed && (hr >= this.open_time && hr <= (this.close_time + 12));
+    return !this.is_closed && (hr >= this.open_time && hr <= this.close_time);
   }
 
   isClosed() {

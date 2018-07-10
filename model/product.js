@@ -86,7 +86,7 @@ export class Product {
 
   isOpen() {
     let hr = moment().hour() + (moment().minute() / 60);
-    return (hr >= this.open_time && hr <= (this.close_time + 12));
+    return (hr >= this.open_time && hr <= this.close_time);
   }
 
   hasPriceTable() {
