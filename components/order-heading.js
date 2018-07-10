@@ -45,7 +45,7 @@ export class OrderHeading extends Component {
     if (!order) {
       return false;
     }
-    let orderDateStr = DateHelper.formatDate(new Date(order.created_at.$date));
+    let orderDateStr = DateHelper.formatDate(order.created_at.$date);
     let {statusIcon, statusColor} = OrderHelper.getStatusIcon(order.status.toUpperCase());
     if(order.otp_status && order.otp_status != 'VERIFIED') {
       statusIcon = "info";

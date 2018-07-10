@@ -118,7 +118,7 @@ export default class StoreDetailsView extends Component {
   }
 
   buildStoreHeading(store) {
-    let storeDateStr = DateHelper.formatDate(new Date(store.created_at.$date));
+    let storeDateStr = DateHelper.formatDate(store.created_at.$date);
     let isNonVeg = store.food_type.indexOf('non-veg') > -1;
     return (
       <Card>

@@ -165,7 +165,7 @@ export default class OrderList extends Component {
 
   renderRow(order, sectionID, rowID) {
     var totalItemQty = order.items.reduce((i, x) => i + x.quantity, 0);
-    let dateStr = DateHelper.time_ago(new Date(order.created_at.$date));
+    let dateStr = DateHelper.time_ago(order.created_at.$date);
     var moreMsg = [
       {
         text: (
