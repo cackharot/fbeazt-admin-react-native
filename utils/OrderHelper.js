@@ -9,6 +9,7 @@ export class Orderstatus {
   static PROGRESS = 'PROGRESS';
   static DELIVERED = 'DELIVERED';
   static CANCELLED = 'CANCELLED';
+  static PAID = 'PAID';
 }
 
 export class OrderHelper {

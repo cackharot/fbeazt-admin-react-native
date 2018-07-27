@@ -40,4 +40,18 @@ export class OrderService extends BaseService {
       })
       .then(response => response.json());
   }
+
+    updateStoreOrderStatus(order_id, store_id, status) {
+        return fetch(Config.BASE_URL + '/api/store_order_status',
+        {
+            method: 'POST',
+            headers: this.headers,
+            body: JSON.stringify({
+                store_id,
+                order_id,
+                status
+            })
+        })
+        .then(response => response.json());
+    }
 }

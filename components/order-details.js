@@ -64,11 +64,10 @@ export default class OrderDetailsView extends Component {
 
   loadOrderDetail() {
     this.service.getOrderDetail(this.props.order_id).then(x => {
-      // console.log(x);
       this.setState({
         isLoading: false,
         order: x
-      })
+      });
     });
   }
 

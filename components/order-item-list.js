@@ -4,8 +4,14 @@ import {
   View,
   Text,
   Image,
+  FlatList,
+  SectionList,
   ScrollView,
+  Modal,
+  Alert,
   TouchableOpacity,
+  ToastAndroid,
+  InteractionManager
 } from 'react-native';
 
 import {
@@ -21,11 +27,18 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { List } from './List';
 import {IndicatorViewPager, PagerTitleIndicator, PagerDotIndicator} from 'rn-viewpager';
+import { Orderstatus } from '../utils/OrderHelper';
+import {OrderService} from '../services/orderservice';
 
 export class OrderItemList extends Component {
   static propTypes = {
-    order: React.PropTypes.object.isRequired,
+    order: React.PropTypes.object.isRequired
   };
+
+    constructor(props) {
+        super(props);
+        this.service = new OrderService();
+    }
 
   getStores(items) {
     let stores = this.getUnique(items.filter(x => x.store && x.store.name).map(x => x.store));
@@ -80,10 +93,88 @@ export class OrderItemList extends Component {
         }
         {stores.length <= 1 && this._renderStoreTitle(stores[0]) }
         {stores.length <= 1 && this._renderItems(order.items) }
-        {this._renderFooter(order) }
+        {this._renderFooter(order)}
+        {this._renderStoreDeliveryStatus(order)}
       </View>
     );
   }
+
+    _updateStoreOrderStatus(order, store, status) {
+        const {store_delivery_status} = order;
+        const st = store_delivery_status[store._id.$oid].status;
+
+        if(st === status) {
+            ToastAndroid.show('Cannot update to same status - ' + status, ToastAndroid.SHORT);
+            return;
+        }
+
+        Alert.alert(
+            'Attentation',
+            'Do you really want to change status to ' + status + '?',
+            [
+                {
+                    text: 'Cancel', onPress: () => {
+                        console.log('Cancel Pressed');
+                    }, style: 'cancel'
+                },
+                {
+                    text: 'OK', onPress: () => {
+                        this.doStoreUpdateStatus(order, store, status);
+                    }
+                },
+            ]
+        );
+    }
+
+    doStoreUpdateStatus(order, store, status) {
+        const {store_delivery_status} = order;
+        this.service.updateStoreOrderStatus(order._id.$oid, store._id.$oid, status)
+            .then(x=>{
+                store_delivery_status[store._id.$oid].status = status;
+                ToastAndroid.show('Store Order status updated to ' + status, ToastAndroid.SHORT);
+                this.forceUpdate();
+            })
+            .catch(e=>{
+                console.error(e);
+                ToastAndroid.show('Error!' + e, ToastAndroid.SHORT);
+            });
+    }
+
+    _getStoreStatusDisplayName(order, store) {
+        const {store_delivery_status} = order;
+        const st = store_delivery_status[store._id.$oid].status;
+        const displayNames = {
+            'PROGRESS': 'READY',
+            'DELIVERED': 'PICKED UP'
+        };
+        return displayNames[st] ? displayNames[st] : st;
+    }
+
+    _renderStoreDeliveryStatus(order){
+        const {store_delivery_status} = order;
+        const stores = this.getStores(order.items);
+        return (<View>
+                <Subheader text="Store Status"/>
+                {!store_delivery_status &&
+                 <Text>Not available!</Text>
+                }
+            {store_delivery_status && stores.map((store, i)=>(
+                    <List key={i} primaryText={store.name}
+                secondaryText={store_delivery_status[store._id.$oid].no + ' - ' + this._getStoreStatusDisplayName(order, store)}
+                captionStyle={[TYPO.paperFontSubhead, COLOR.paperBlueGrey900]}
+                rightIcon={<View>
+                           {store_delivery_status[store._id.$oid].status === Orderstatus.PROGRESS &&
+                            <Button text={"PICKUP"} raised={true} onPress={()=>this._updateStoreOrderStatus(order, store, 'DELIVERED')}/>
+                           }
+                           {store_delivery_status[store._id.$oid].status === Orderstatus.PENDING &&
+                            <Button text={"CANCEL"} raised={true} onPress={()=>this._updateStoreOrderStatus(order, store, 'CANCELLED')}/>
+                           }
+                           </View>
+                          }
+                    />
+            ))}
+        </View>);
+    }
 
   _renderItems(items) {
     return (
@@ -109,8 +200,7 @@ export class OrderItemList extends Component {
   _renderStoreTitle(store) {
     return (
       <View>
-        <Subheader style={[TYPO.paperFontSubhead,COLOR.paperTeal800]}
-          text={store.name}/>
+        <Subheader style={[TYPO.paperFontSubhead,COLOR.paperTeal800]} text={store.name} />
       </View>
     );
   }
